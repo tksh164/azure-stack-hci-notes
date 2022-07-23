@@ -90,12 +90,12 @@
 
         TenantId                   = $tenantId                 # Azure Stack HCI リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
         SubscriptionId             = $subscriptionId           # Azure Stack HCI リソースを作成する Azure サブスクリプションの ID です
-        ResourceGroupName          = $azshciResourceGroupName  # Azure Stack HCI リソースを作成するリソース グループ名です。既存、新規どちらでも OK です
+        ResourceGroupName          = $azshciResourceGroupName  # Azure Stack HCI リソースを作成するリソース グループ名です
         Region                     = $azshciRegion             # Azure Stack HCI リソースを作成する場所です。サポートされているリージョンを指定する必要があります。https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure
         ResourceName               = $azshciResourceName       # Azure Stack HCI リソースの名前です。省略した場合の既定値はクラスター名です
 
         EnableAzureArcServer       = $true                     # Azure Stack HCI クラスター ノードを Azure Arc-enabled server として登録する場合は $true を指定します
-        ArcServerResourceGroupName = $arcResourceGroupName     # Azure Stack HCI クラスター ノードの Azure Arc リソースを配置するリソース グループ名です。既存のリソース グループは指定できません
+        ArcServerResourceGroupName = $arcResourceGroupName     # Azure Stack HCI クラスター ノードの Azure Arc リソースを配置するリソース グループ名です
 
         Verbose                    = $true
     }
@@ -105,30 +105,221 @@
 3. Azure Stack HCI クラスターの登録状態を確認します。
 
     ```powershell
-    Invoke-Command -ComputerName $computerName -ScriptBlock {
+    Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
         Get-AzureStackHCI
     }
     ```
 
-## AKS on HCI 構成の準備
+    実行結果の例:
+
+    ```powershell
+    PSComputerName     : azshcinode01.azshci.local
+    RunspaceId         : 791b714b-ba27-4b84-aa2e-dc62c59f7d3c
+    ClusterStatus      : Clustered
+    RegistrationStatus : Registered
+    RegistrationDate   : 7/15/2022 4:53:08 AM
+    AzureResourceName  : azshciclus-aksazshci4-220715-0448
+    AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci4/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci4-220715-0448
+    ConnectionStatus   : Connected
+    LastConnected      : 7/15/2022 4:57:18 AM
+    IMDSAttestation    : Disabled
+    DiagnosticLevel    : Basic
+    ```
+
+## AKS on HCI を構成するための Azure VM (Hyper-V) ホスト上の準備
 
 ### ボリュームの作成
 
+```powershell
+Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    New-Volume -FriendlyName 'AksHciVol' -StoragePoolFriendlyName 'S2D*' -FileSystem CSVFS_ReFS -UseMaximumSize -ProvisioningType Fixed -ResiliencySettingName Mirror -Verbose
+}
+```
+
 ### NAT を構成
 
+```powershell
+Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.10.13.254 -PrefixLength 24
+
+New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.10.13.0/24
+```
+
+構成結果を確認
+
+```powershell
+Get-NetAdapter -Name '*InternalNAT*' | Get-NetIPAddress | Format-Table -Property InterfaceIndex,InterfaceAlias,IPAddress,PrefixLength,AddressFamily
+
+Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
+```
+
+構成結果の確認例:
+
+```powershell
+PS C:\> Get-NetAdapter -Name '*InternalNAT*' | Get-NetIPAddress | Format-Table -Property InterfaceIndex,InterfaceAlias,IPAddress,PrefixLength,AddressFamily
+
+InterfaceIndex InterfaceAlias          IPAddress    PrefixLength AddressFamily
+-------------- --------------          ---------    ------------ -------------
+             8 vEthernet (InternalNAT) 192.168.0.1            16          IPv4
+             8 vEthernet (InternalNAT) 10.10.13.254           24          IPv4
+
+PS C:\> Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
+
+Name              InternalIPInterfaceAddressPrefix Active
+----              -------------------------------- ------
+AzSHCINAT         192.168.0.0/16                     True
+AzSHCINAT-Compute 10.10.13.0/24                      True
+```
+
+## AKS on HCI を構成するための Azure サブスクリプション上の準備
+
+リソース プロバイダーを登録します。
+
+```powershell
+Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes'
+Get-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguration'
+```
+
+## AKS on HCI を構成するための HCI ノード上の準備
+
+### HCI ノードへの AksHci PowerShell モジュールのインストール
+
+```powershell
+$hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
+
+Invoke-Command -ComputerName $hciNodes -ScriptBlock {
+    Install-PackageProvider -Name 'NuGet' -Force -Verbose
+    Install-Module -Name 'PowershellGet' -Confirm:$false -SkipPublisherCheck -Force -Verbose
+}
+```
+
+```powershell
+$hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
+
+Invoke-Command -ComputerName $hciNodes -ScriptBlock {
+    Install-Module -Name 'Az.Accounts' -Repository 'PSGallery' -RequiredVersion 2.2.4 -Force -Verbose
+    Install-Module -Name 'Az.Resources' -Repository 'PSGallery' -RequiredVersion 3.2.0 -Force -Verbose
+    Install-Module -Name 'AzureAD' -Repository 'PSGallery' -RequiredVersion 2.0.2.128 -Force -Verbose
+    Install-Module -Name 'AksHci' -Repository 'PSGallery' -AcceptLicense -Force -Verbose 
+}
+```
+
+### HCI ノードの要件の検証
+
+```powershell
+Initialize-AksHciNode
+```
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
 
-### Azure サブスクリプションの準備
+### 管理クラスターで使用する仮想ネットワークを作成
 
-### AksHci PowerShell モジュールのインストール
-
-### ノード用マシンの要件を検証
-
-### 仮想ネットワークを作成
+```powershell
+$params = @{
+    Name               = 'akshci-main-network'
+    VSwitchName        = 'ComputeSwitch'
+    Gateway            = '10.10.13.254'
+    DnsServers         = '192.168.0.1'
+    IpAddressPrefix    = '10.10.13.0/24'
+    K8sNodeIpPoolStart = '10.10.13.10'
+    K8sNodeIpPoolEnd   = '10.10.13.149'
+    VipPoolStart       = '10.10.13.150'
+    VipPoolEnd         = '10.10.13.250'
+}
+$vnet = New-AksHciNetworkSetting @params
+```
 
 ### AKS on HCI の構成を作成
 
-### AKS on HCI (AKS ホスト / 管理クラスター) を作成
+```powershell
+$VerbosePreference = 'Continue'
+
+$clusterRoleName = 'akshci-mgmt-cluster-{0}' -f (Get-Date).ToString('yyMMdd-HHmm')
+$baseDir         = 'C:\ClusterStorage\aksvol\AKS-HCI'
+
+$params = @{
+    ImageDir            = Join-Path -Path $baseDir -ChildPath 'Images'
+    WorkingDir          = Join-Path -Path $baseDir -ChildPath 'WorkingDir'
+    CloudConfigLocation = Join-Path -Path $baseDir -ChildPath 'Config'
+    SkipHostLimitChecks = $false
+    ClusterRoleName     = $clusterRoleName
+    CloudServiceCidr    = '192.168.0.11/16'
+    VNet                = $vnet
+    KvaName             = $clusterRoleName
+    ControlplaneVmSize  = 'Standard_D4s_v3'
+    Verbose             = $true
+}
+Set-AksHciConfig @params
+```
+
+### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
+
+```powershell
+$VerbosePreference = 'Continue'
+
+$tenantId          = '00000000-1111-2222-3333-444444444444'
+$subscriptionId    = '55555555-6666-7777-8888-999999999999'
+$resourceGroupName = 'aksazshci'
+
+$params = @{
+    TenantId                = $tenantId           # 管理クラスターの Azure Arc リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
+    SubscriptionId          = $subscriptionId     # 管理クラスターの Azure Arc リソースをを作成する Azure サブスクリプションの ID です
+    ResourceGroupName       = $resourceGroupName  # 管理クラスターの Azure Arc リソースを配置するリソース グループ名です
+    UseDeviceAuthentication = $true               # デバイス許可付与フローを使用します。出力された URL とコードを使用してブラウザーで認可します
+    Verbose                 = $true
+}
+Set-AksHciRegistration @params
+```
+
+### 管理クラスターを作成
+
+```powershell
+$VerbosePreference = 'Continue'
+Install-AksHci -Verbose
+```
 
 ## ワークロード クラスターの作成
+
+```powershell
+$params = @{
+    Name                  = 'akswc1'
+    ControlPlaneNodeCount = 1
+    ControlplaneVmSize    = 'Standard_A4_v2'
+    LoadBalancerVmSize    = 'Standard_A2_v2'
+    NodePoolName          = 'nodepool1'
+    NodeCount             = 1
+    NodeVmSize            = 'Standard_A2_v2'
+    OSType                = 'Linux'
+    Verbose               = $true
+}
+New-AksHciCluster @params
+```
+
+## よく行う操作
+
+### 停止方法 / 再開方法
+
+
+### Azure Stack HCI ノードへのアクセス
+
+
+### AKS on HCI の削除
+
+管理クラスターやワークロード クラスターを含めた AKS on HCI 関連の要素 (保存された構成ファイルなども含む) を全て削除します。AKS on HCI のを再構築したい場合に実行します。
+
+```powershell
+Uninstall-AksHci
+```
+
+### ワークロード クラスターの削除
+
+管理クラスターは残したまま、ワークロード クラスターのみを削除します。
+
+```powershell
+Remove-AksHciCluster -Name 'akswc1'
+```
+
+### Azure Stack HCI の登録に関する操作
+
+
+### ログの確認
+
