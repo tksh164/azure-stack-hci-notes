@@ -135,7 +135,7 @@
     }
     ```
 
-    登録状態の例:
+    登録状態を確認した結果の例:
 
     ```powershell
     PSComputerName     : azshcinode01.azshci.local
