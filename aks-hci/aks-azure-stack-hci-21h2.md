@@ -393,7 +393,7 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 #### PowerShell
 
-- Azure VM (Hyper-V ホスト) 上から接続する場合は、資格情報を省略できるので、`-ComputerName` を使用するのが便利です。
+- Azure VM (Hyper-V ホスト) 上から接続する場合は (既に Domain Admin としてサインインしているため)、資格情報の入力を省略できるので、`-ComputerName` を使用するのが便利です。
 
     ```powershell
     Enter-PSSession -ComputerName 'azshcinode01'
