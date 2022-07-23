@@ -433,7 +433,7 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 #### ファイル システム
 
-- HCI ノードにはファイル サーバーの役割はインストールされています。
+- HCI ノードにはファイル サーバーの役割がインストールされています。
 
 - Azure VM (Hyper-V ホスト) 上の Explorer からアクセスできます。
     - `\\azshcinode01\C$`
