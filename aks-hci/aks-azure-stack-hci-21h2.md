@@ -230,13 +230,17 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 ### HCI ノードの要件の検証
 
+[Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して HCI ノードですべての要件が満たされているかを確認します。
+
 ```powershell
 Initialize-AksHciNode
 ```
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
 
-### 管理クラスターで使用する仮想ネットワークを作成
+### 管理クラスターで使用する仮想ネットワーク構成を作成
+
+[New-AksHciNetworkSetting](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/new-akshcinetworksetting) コマンドレットを使用して管理クラスターで使用する仮想ネットワークの構成を作成します。
 
 ```powershell
 $params = @{
@@ -254,6 +258,8 @@ $vnet = New-AksHciNetworkSetting @params
 ```
 
 ### AKS on HCI の構成を作成
+
+[Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。
 
 管理クラスターのコントロール プレーン VM のスペックが低いと色々な処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
 
@@ -280,6 +286,8 @@ Set-AksHciConfig @params
 
 ### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
 
+[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure に登録するための構成を作成します。
+
 ```powershell
 $VerbosePreference = 'Continue'
 
@@ -299,12 +307,16 @@ Set-AksHciRegistration @params
 
 ### 管理クラスターを作成
 
+[Install-AksHci](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/install-akshci) コマンドレットを使用して管理クラスターを作成します。
+
 ```powershell
 $VerbosePreference = 'Continue'
 Install-AksHci -Verbose
 ```
 
 ## ワークロード クラスターの作成
+
+[New-AksHciCluster](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/new-akshcicluster) コマンドレットを使用してワークロード クラスターを作成します。
 
 ```powershell
 $params = @{
