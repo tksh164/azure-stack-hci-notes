@@ -333,6 +333,22 @@ $params = @{
 New-AksHciCluster @params
 ```
 
+## AKS on HCI の削除
+
+管理クラスターやワークロード クラスターを含めた AKS on HCI 関連の要素 (保存された構成ファイルなども含む) を全て削除します。AKS on HCI のを再構築したい場合に実行します。
+
+```powershell
+Uninstall-AksHci
+```
+
+## ワークロード クラスターの削除
+
+管理クラスターは残したまま、ワークロード クラスターのみを削除します。
+
+```powershell
+Remove-AksHciCluster -Name 'akswc1'
+```
+
 ## よく行う操作
 
 ### 停止方法 / 再開方法
@@ -434,22 +450,6 @@ Invoke-Command -VMName $hciVMName -Credential $creds -ScriptBlock {
 - 各 HCI ノードに接続すれば Hyper-V マネージャーから操作できます。
     - `azshcinode01.azshci.local`
     - `azshcinode02.azshci.local`
-
-### AKS on HCI の削除
-
-管理クラスターやワークロード クラスターを含めた AKS on HCI 関連の要素 (保存された構成ファイルなども含む) を全て削除します。AKS on HCI のを再構築したい場合に実行します。
-
-```powershell
-Uninstall-AksHci
-```
-
-### ワークロード クラスターの削除
-
-管理クラスターは残したまま、ワークロード クラスターのみを削除します。
-
-```powershell
-Remove-AksHciCluster -Name 'akswc1'
-```
 
 ### Azure Stack HCI の登録に関する操作
 
