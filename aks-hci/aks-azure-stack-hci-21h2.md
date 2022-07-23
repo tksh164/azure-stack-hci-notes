@@ -353,6 +353,8 @@ Remove-AksHciCluster -Name 'akswc1'
 
 ### 停止方法 / 再開方法
 
+Azure VM (Hyper-V ホスト) を停止/開始する前には、AKS on HCI VM や Azure Stack HCI ノード VM を適切な状態にします。
+
 #### 停止方法
 
 Azure Stack HCI クラスター上で動作している VM 数によりますが、停止処理がすべて完了するまでには数分かかります。
