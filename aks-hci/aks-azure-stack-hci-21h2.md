@@ -396,13 +396,13 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 - Azure VM (Hyper-V ホスト) 上から接続する場合は、資格情報を省略できるので、`-ComputerName` を使用するのが便利です。
 
     ```powershell
-    Enter-PSSession -ComputerName azshcinode01
+    Enter-PSSession -ComputerName 'azshcinode01'
     ```
 
 - PowerShell Direct を使用した PSSession でも接続できます。
 
     ```powershell
-    Enter-PSSession -VMName azshcinode01
+    Enter-PSSession -VMName 'AZSHCINODE01'
     ```
 
 - 資格情報
