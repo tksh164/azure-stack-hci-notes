@@ -57,6 +57,10 @@
 
 2. クラウド監視を構成します。
 
+    クラウド監視用のストレージ アカウントを作成し、そのストレージ アカウントを使用して Azure Stack HCI クラスターの監視を構成します。
+
+    ストレージ アカウントの作成例:
+
     ```powershell
     $params = @{
         Name                   = 'azshciwitness0{0}' -f (-join ((48..57) + (97..122) | Get-Random -Count 4 |% {[char]$_}))
