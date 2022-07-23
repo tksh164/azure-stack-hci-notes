@@ -136,7 +136,7 @@
     RegistrationStatus : Registered
     RegistrationDate   : 7/15/2022 4:53:08 AM
     AzureResourceName  : azshciclus-aksazshci4-220715-0448
-    AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci4/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci4-220715-0448
+    AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci-220715-0448
     ConnectionStatus   : Connected
     LastConnected      : 7/15/2022 4:57:18 AM
     IMDSAttestation    : Disabled
