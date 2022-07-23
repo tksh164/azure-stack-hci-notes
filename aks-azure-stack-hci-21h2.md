@@ -234,7 +234,7 @@ $vnet = New-AksHciNetworkSetting @params
 $VerbosePreference = 'Continue'
 
 $clusterRoleName = 'akshci-mgmt-cluster-{0}' -f (Get-Date).ToString('yyMMdd-HHmm')
-$baseDir         = 'C:\ClusterStorage\aksvol\AKS-HCI'
+$baseDir         = 'C:\ClusterStorage\AksHciVol\AKS-HCI'
 
 $params = @{
     ImageDir            = Join-Path -Path $baseDir -ChildPath 'Images'
@@ -298,9 +298,103 @@ New-AksHciCluster @params
 
 ### 停止方法 / 再開方法
 
+#### 停止方法
 
-### Azure Stack HCI ノードへのアクセス
+```powershell
+$creds = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password for the account'
+$hciVMName = 'AZSHCINODE01'
 
+Invoke-Command -VMName $hciVMName -Credential $creds -ScriptBlock {
+    # Get any running VMs on Azure Stack HCI and turn them off.
+    Get-ClusterResource | Where-Object -FilterScript { $_.ResourceType -eq 'Virtual Machine' } | Stop-ClusterResource -Verbose
+
+    # Stop the cluster
+    Stop-Cluster -Force -Verbose
+}
+
+# Power down Azure Stack HCI node VMs on your Hyper-V host.
+Get-VM | Stop-VM -Force -Verbose
+```
+
+#### 再開方法
+
+```powershell
+$creds = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password for the account'
+$hciVMName = 'AZSHCINODE01'
+
+Get-VM | Start-VM -Verbose
+
+Invoke-Command -VMName $hciVMName -Credential $creds -ScriptBlock {
+    # Stop the cluster
+    Start-Cluster -Verbose
+
+    # Get any running VMs on Azure Stack HCI and turn them off.
+    Get-ClusterResource | Where-Object -FilterScript { $_.ResourceType -eq 'Virtual Machine' } | Start-ClusterResource -Verbose
+}
+```
+
+### Azure VM (Hyper-V ホスト) から Azure Stack HCI ノードへの各種アクセス方法
+
+#### vmconnect.exe
+
+- 拡張セッションを使用して接続できます。
+
+- 資格情報
+
+    | 役割 | ユーザー | パスワード |
+    | ---- | ---- | ---- |
+    | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+
+#### PowerShell
+
+- Azure VM (Hyper-V ホスト) 上から接続する場合は、資格情報を省略できるので、`-ComputerName` を使用するのが便利です。
+
+    ```powershell
+    Enter-PSSession -ComputerName azshcinode01
+    ```
+
+- PowerShell Direct を使用した PSSession でも接続できます。
+
+    ```powershell
+    Enter-PSSession -VMName azshcinode01
+    ```
+
+- 資格情報
+
+    | 役割 | ユーザー | パスワード |
+    | ---- | ---- | ---- |
+    | Domain Admin | `azshci\AzureUser` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+
+#### ファイル システム
+
+- HCI ノードにはファイル サーバーの役割はインストールされています。
+
+- Azure VM (Hyper-V ホスト) 上の Explorer からアクセスできます。
+    - `\\azshcinode01\C$`
+    - `\\azshcinode02\C$`
+
+- 資格情報
+
+    | 役割 | ユーザー | パスワード |
+    | ---- | ---- | ---- |
+    | Domain Admin | `azshci\AzureUser` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+
+#### フェールオーバー クラスター マネージャー
+
+- Azure VM (Hyper-V ホスト) 上にはフェールオーバー クラスター マネージャーがインストールされています。
+- `azshciclus.azshci.local` に接続すればフェールオーバー クラスター マネージャーから操作できます。
+
+#### Hyper-V マネージャー
+
+- Azure VM (Hyper-V ホスト) 上には Hyper-V マネージャーがインストールされています。
+- 各 HCI ノードに接続すれば Hyper-V マネージャーから操作できます。
+    - `azshcinode01.azshci.local`
+    - `azshcinode02.azshci.local`
 
 ### AKS on HCI の削除
 
