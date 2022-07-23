@@ -391,17 +391,6 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 ### Azure VM (Hyper-V ホスト) から Azure Stack HCI ノードへの各種アクセス方法
 
-#### vmconnect.exe
-
-- 拡張セッションを使用して接続できます。
-
-- 資格情報
-
-    | 役割 | ユーザー | パスワード |
-    | ---- | ---- | ---- |
-    | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
-    | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
-
 #### PowerShell
 
 - Azure VM (Hyper-V ホスト) 上から接続する場合は、資格情報を省略できるので、`-ComputerName` を使用するのが便利です。
@@ -421,6 +410,24 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
     | 役割 | ユーザー | パスワード |
     | ---- | ---- | ---- |
     | Domain Admin | `azshci\AzureUser` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+    | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
+
+#### Hyper-V マネージャー
+
+- Azure VM (Hyper-V ホスト) 上には Hyper-V マネージャーがインストールされています。
+- 各 HCI ノードに接続すれば Hyper-V マネージャーから操作できます。
+    - `azshcinode01.azshci.local`
+    - `azshcinode02.azshci.local`
+
+#### vmconnect.exe
+
+- 拡張セッションを使用して接続できます。
+
+- 資格情報
+
+    | 役割 | ユーザー | パスワード |
+    | ---- | ---- | ---- |
     | ローカル Administrator | `azshcinode01\Administrator` | デプロイ時に指定した Azure VM のパスワード |
     | ローカル Administrator | `azshcinode02\Administrator` | デプロイ時に指定した Azure VM のパスワード |
 
@@ -444,13 +451,6 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 - Azure VM (Hyper-V ホスト) 上にはフェールオーバー クラスター マネージャーがインストールされています。
 - `azshciclus.azshci.local` に接続すればフェールオーバー クラスター マネージャーから操作できます。
-
-#### Hyper-V マネージャー
-
-- Azure VM (Hyper-V ホスト) 上には Hyper-V マネージャーがインストールされています。
-- 各 HCI ノードに接続すれば Hyper-V マネージャーから操作できます。
-    - `azshcinode01.azshci.local`
-    - `azshcinode02.azshci.local`
 
 ### Azure Stack HCI の登録に関する操作
 
