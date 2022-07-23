@@ -73,29 +73,29 @@
 3. Azure Stack HCI クラスターを Azure に登録します。
 
     ```powershell
-    $clusterName             = 'azshciclus'                 # Azure Stack HCI クラスターの名前です。Evaluation Guide ではこの名前になっています
-    $computerName            = 'azshcinode01.azshci.local'  # Azure Stack HCI クラスター内のノードの 1 台です。Evaluation Guide ではこの名前になっています
+    $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
+    $computerName            = 'azshcinode01.azshci.local'  # The node name that one of the cluster nodes in the Azure Stack HCI cluster.
     $credential              = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password'
 
     $tenantId                = '00000000-1111-2222-3333-444444444444'
     $subscriptionId          = '55555555-6666-7777-8888-999999999999'
     $azshciResourceGroupName = 'aksazshci'
     $azshciRegion            = 'SoutheastAsia'
-    $azshciResourceName      = '{0}-{1}-{2}' -f $clusterName, $azshciResourceGroupName, (Get-Date).ToString('yyMMdd-HHmm')  # Azure Stack HCI リソースの名前。
+    $azshciResourceName      = '{0}-{1}-{2}' -f $clusterName, $azshciResourceGroupName, (Get-Date).ToString('yyMMdd-HHmm')
     $arcResourceGroupName    = '{0}-arc' -f $azshciResourceGroupName
 
     $params = @{
-        ComputerName               = $computerName             # Azure 登録する Azure Stack HCI クラスターの名前、またはいずれかのノードの名前です
-        Credential                 = $credential               # ComputerName に接続するための資格情報です。デプロイ時に指定したパスワードを入力します
+        ComputerName               = $computerName             # The cluster name or one of the cluster node name in the cluster that is being registered to Azure.
+        Credential                 = $credential               # The credential for the ComputerName. Use the password specified during Azure VM deployment.
 
-        TenantId                   = $tenantId                 # Azure Stack HCI リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
-        SubscriptionId             = $subscriptionId           # Azure Stack HCI リソースを作成する Azure サブスクリプションの ID です
-        ResourceGroupName          = $azshciResourceGroupName  # Azure Stack HCI リソースを作成するリソース グループ名です
-        Region                     = $azshciRegion             # Azure Stack HCI リソースを作成する場所です。サポートされているリージョンを指定する必要があります。https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure
-        ResourceName               = $azshciResourceName       # Azure Stack HCI リソースの名前です。省略した場合の既定値はクラスター名です
+        TenantId                   = $tenantId                 # The Azure AD tenant that associated with Azure subscription to create the Azure Stack HCI resource.
+        SubscriptionId             = $subscriptionId           # The Azure subscription to create the Azure Stack HCI resource.
+        ResourceGroupName          = $azshciResourceGroupName  # The resource group to create the Azure Stack HCI resource.
+        Region                     = $azshciRegion             # The region to create the Azure Stack HCI resource. Be sure to specify the supported region. https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure
+        ResourceName               = $azshciResourceName       # The resource name of the Azure Stack HCI resource. The default value is the cluster name.
 
-        EnableAzureArcServer       = $true                     # Azure Stack HCI クラスター ノードを Azure Arc-enabled server として登録する場合は $true を指定します
-        ArcServerResourceGroupName = $arcResourceGroupName     # Azure Stack HCI クラスター ノードの Azure Arc リソースを配置するリソース グループ名です
+        EnableAzureArcServer       = $true                     # Set $true if want to register Azure Stack HCI cluster as Azure Arc-enabled server.
+        ArcServerResourceGroupName = $arcResourceGroupName     # The resource group to create the Arc resource of Azure Stack HCI nodes.
 
         Verbose                    = $true
     }
@@ -261,10 +261,10 @@ $subscriptionId    = '55555555-6666-7777-8888-999999999999'
 $resourceGroupName = 'aksazshci'
 
 $params = @{
-    TenantId                = $tenantId           # 管理クラスターの Azure Arc リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
-    SubscriptionId          = $subscriptionId     # 管理クラスターの Azure Arc リソースをを作成する Azure サブスクリプションの ID です
-    ResourceGroupName       = $resourceGroupName  # 管理クラスターの Azure Arc リソースを配置するリソース グループ名です
-    UseDeviceAuthentication = $true               # デバイス許可付与フローを使用します。出力された URL とコードを使用してブラウザーで認可します
+    TenantId                = $tenantId           # The Azure AD tenant that associated with Azure subscription to create the Azure Arc-enabled Kubernetes resource for the management cluster.
+    SubscriptionId          = $subscriptionId     # The Azure subscription to create the Azure Arc-enabled Kubernetes resource for the management cluster.
+    ResourceGroupName       = $resourceGroupName  # The resource group to create the Azure Arc-enabled Kubernetes resource for the management cluster.
+    UseDeviceAuthentication = $true               # Use the OAuth 2.0 device authorization grant flow. The registration operation authorizes with the output URL and code in a web browser.
     Verbose                 = $true
 }
 Set-AksHciRegistration @params
