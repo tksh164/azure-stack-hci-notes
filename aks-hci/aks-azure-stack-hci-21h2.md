@@ -355,35 +355,34 @@ Remove-AksHciCluster -Name 'akswc1'
 
 #### 停止方法
 
-```powershell
-$creds = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password for the account'
-$hciVMName = 'AZSHCINODE01'
+Azure Stack HCI クラスター上で動作している VM 数によりますが、停止処理がすべて完了するまでには数分かかります。
 
-Invoke-Command -VMName $hciVMName -Credential $creds -ScriptBlock {
-    # Get any running VMs on Azure Stack HCI and turn them off.
+```powershell
+Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    # Get any running VMs on Azure Stack HCI cluster and turn them off.
     Get-ClusterResource | Where-Object -FilterScript { $_.ResourceType -eq 'Virtual Machine' } | Stop-ClusterResource -Verbose
 
     # Stop the cluster
     Stop-Cluster -Force -Verbose
 }
 
-# Power down Azure Stack HCI node VMs on your Hyper-V host.
+# Turn off Azure Stack HCI node VMs on your Hyper-V host.
 Get-VM | Stop-VM -Force -Verbose
 ```
 
 #### 再開方法
 
-```powershell
-$creds = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password for the account'
-$hciVMName = 'AZSHCINODE01'
+Azure Stack HCI クラスター上に存在する VM 数によりますが、再開処理がすべて完了するまでには数分かかります。
 
+```powershell
+# Turn on Azure Stack HCI node VMs on your Hyper-V host.
 Get-VM | Start-VM -Verbose
 
-Invoke-Command -VMName $hciVMName -Credential $creds -ScriptBlock {
-    # Stop the cluster
+Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    # Start the cluster
     Start-Cluster -Verbose
 
-    # Get any running VMs on Azure Stack HCI and turn them off.
+    # Get any VMs on Azure Stack HCI cluster and turn them on.
     Get-ClusterResource | Where-Object -FilterScript { $_.ResourceType -eq 'Virtual Machine' } | Start-ClusterResource -Verbose
 }
 ```
