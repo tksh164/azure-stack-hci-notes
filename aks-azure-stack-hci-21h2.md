@@ -53,6 +53,23 @@
 
 2. クラウド監視を構成します。
 
+    ```powershell
+    $params = @{
+        Name                   = 'azshciwitness0{0}' -f (-join ((48..57) + (97..122) | Get-Random -Count 4 |% {[char]$_}))
+        ResourceGroupName      = 'aksazshci'
+        Location               = 'japaneast'
+        SkuName                = 'Standard_LRS'
+        Kind                   = 'StorageV2'
+        EnableHttpsTrafficOnly = $true
+        MinimumTlsVersion      = 'TLS1_2'
+        AllowBlobPublicAccess  = $false
+    }
+    $sa = New-AzStorageAccount @params
+
+    $sa.Context | Format-List -Property StorageAccountName,@{ Name = 'Endpoint'; Expression = { $_.EndpointSuffix.Trim('/') } }
+    $sa | Get-AzStorageAccountKey
+    ```
+
 ### Part 3 - Integrate Azure Stack HCI 21H2 with Azure
 
 [Integrate Azure Stack HCI 21H2 with Azure](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/3_AzSHCIIntegration.md) を参考にして Azure Stack HCI クラスターを Azure に登録します。
