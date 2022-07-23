@@ -66,32 +66,36 @@
     Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Confirm:$false -Verbose
     ```
 
-2. Azure Stack HCI クラスターを Azure に登録します。
+2. PowerShell を閉じて起動し直します。
 
-```powershell
-$clusterName             = 'azshciclus'  # Azure Stack HCI クラスターの名前です。Evaluation Guide の場合はこの名前になっています
-$tenantId                = '00000000-1111-2222-3333-444444444444'
-$subscriptionId          = '55555555-6666-7777-8888-999999999999'
-$azshciResourceGroupName = 'aksazshci'
-$azshciRegion            = 'SoutheastAsia'
-$azshciResourceName      = '{0}-{1}-{2}' -f $clusterName, $azshciResourceGroupName, (Get-Date).ToString('yyMMdd-HHmm')  # Azure Stack HCI リソースの名前。
-$arcResourceGroupName    = '{0}-arc' -f $azshciResourceGroupName
+    - インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
 
-$params = @{
+3. Azure Stack HCI クラスターを Azure に登録します。
 
-    TenantId                   = $tenantId                 # Azure Stack HCI リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
-    SubscriptionId             = $subscriptionId           # Azure Stack HCI リソースを作成する Azure サブスクリプションの ID です
-    ResourceGroupName          = $azshciResourceGroupName  # Azure Stack HCI リソースを作成するリソース グループ名です。
-    Region                     = $azshciRegion             # Azure Stack HCI リソースを作成する場所です。一部のリージョンでのみ作成できます。https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure
-    ResourceName               = $azshciResourceName       # Azure Stack HCI リソースの名前です。省略した場合の既定値はクラスター名です
-    ComputerName               = $clusterName              # Azure 登録する Azure Stack HCI クラスターの名前、またはいずれかのノードの名前です
-    Credential                 = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password'
-    EnableAzureArcServer       = $true                     # Azure Stack HCI クラスター ノードを Azure Arc-enabled server として登録する場合は $true を指定します
-    ArcServerResourceGroupName = $arcResourceGroupName     # Azure Stack HCI クラスター ノードの Azure Arc リソースを配置するリソース グループ名です。
-    Verbose                    = $true
-}
-Register-AzStackHCI @params
-```
+    ```powershell
+    $clusterName             = 'azshciclus'  # Azure Stack HCI クラスターの名前です。Evaluation Guide の場合はこの名前になっています
+    $tenantId                = '00000000-1111-2222-3333-444444444444'
+    $subscriptionId          = '55555555-6666-7777-8888-999999999999'
+    $azshciResourceGroupName = 'aksazshci'
+    $azshciRegion            = 'SoutheastAsia'
+    $azshciResourceName      = '{0}-{1}-{2}' -f $clusterName, $azshciResourceGroupName, (Get-Date).ToString('yyMMdd-HHmm')  # Azure Stack HCI リソースの名前。
+    $arcResourceGroupName    = '{0}-arc' -f $azshciResourceGroupName
+
+    $params = @{
+
+        TenantId                   = $tenantId                 # Azure Stack HCI リソースを作成する Azure サブスクリプションが関連付いている Azure AD テナントの ID です
+        SubscriptionId             = $subscriptionId           # Azure Stack HCI リソースを作成する Azure サブスクリプションの ID です
+        ResourceGroupName          = $azshciResourceGroupName  # Azure Stack HCI リソースを作成するリソース グループ名です。
+        Region                     = $azshciRegion             # Azure Stack HCI リソースを作成する場所です。一部のリージョンでのみ作成できます。https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure
+        ResourceName               = $azshciResourceName       # Azure Stack HCI リソースの名前です。省略した場合の既定値はクラスター名です
+        ComputerName               = $clusterName              # Azure 登録する Azure Stack HCI クラスターの名前、またはいずれかのノードの名前です
+        Credential                 = Get-Credential -UserName 'azshci\AzureUser' -Message 'Enter the password'
+        EnableAzureArcServer       = $true                     # Azure Stack HCI クラスター ノードを Azure Arc-enabled server として登録する場合は $true を指定します
+        ArcServerResourceGroupName = $arcResourceGroupName     # Azure Stack HCI クラスター ノードの Azure Arc リソースを配置するリソース グループ名です。
+        Verbose                    = $true
+    }
+    Register-AzStackHCI @params
+    ```
 
 3. Azure Stack HCI クラスターの登録状態を確認します。
 
