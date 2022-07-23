@@ -10,7 +10,7 @@
 
 [Deploy your Azure VM (Prerequisite)](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/1_DeployAzureVM.md) を参考にして Azure VM (Hyper-V ホスト) をデプロイします。
 
-1. カスタム ARM テンプレートを使用してデプロイします。
+1. カスタム ARM テンプレートを使用してデプロイします。デプロイに要する時間は 35 分程度です。
 
     - VM サイズは **Standard_E16s_v4** が事実上の最低サイズです。これ以上小さいサイズを選択した場合、環境は作れたとしてもその後の検証がほぼ何もできません。
     - データ ディスク サイズは **64** を選択します。
