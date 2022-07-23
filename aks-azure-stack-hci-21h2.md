@@ -26,8 +26,8 @@
 
 3. Azure VM (Hyper-V ホスト) 上の HCI ノード VM の RAM サイズを可能な範囲で増やしておきます。
 
-    - 2 ノードなら、**57344 MB** 程度に増やしておくのが良いです。
-        - 56 GB = (VM RAM: 128 GB - ホスト分: 16 GB) / 2 ノード。
+    - Standard_E16s_v4 で 2 ノードなら、**57344 MB** 程度に増やしておくのが良いです。
+        - 56 GB = (HCI ノード VM RAM: 128 GB - Hyper-V ホスト分: 16 GB) / 2 ノード。
         - VMRS ファイル サイズは 2 ノード分で 112 GB です。
 
 ### Part 2 - Configure your Azure Stack HCI 21H2 Cluster
