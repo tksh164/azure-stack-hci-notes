@@ -255,6 +255,8 @@ $vnet = New-AksHciNetworkSetting @params
 
 ### AKS on HCI の構成を作成
 
+管理クラスターのコントロール プレーン VM のスペックが低いと色々な処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
+
 ```powershell
 $VerbosePreference = 'Continue'
 
