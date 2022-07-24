@@ -57,7 +57,7 @@
 
         - Compute ネットワークのアドレス空間を広く確保する場合
 
-            - Node 1
+            - azshcinode**01**.azshci.local
 
                 | MAC address | Name | IP address | Subnet mask |
                 | ---- | ---- | ---- | ---- |
@@ -65,7 +65,7 @@
                 | 00-15-5D-00-04-**03** | Storage 2 | 10.**12**.0.**1** | 24 |
                 | 00-15-5D-00-04-**04** | Compute | 10.**13**.0.**1** | 16 |
 
-            - Node 2
+            - azshcinode**02**.azshci.local
 
                 | MAC address | Name | IP address | Subnet mask |
                 | ---- | ---- | ---- | ---- |
