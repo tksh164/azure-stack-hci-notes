@@ -55,26 +55,23 @@
             - Node 2: 10.10.11.2/24
             - Node 2: 10.10.12.2/24
 
-<!--
+        - Compute ネットワークのアドレス空間を広く確保する場合
 
-    - One physical network adapter for management
-        - Management
-            - Node 1: 192.168.0.2/16
-            - Node 2: 192.168.0.3/16
+            - Node 1
 
-    - Create one virtual switch for compute only
-        - Compute
-            - Node 1: 10.13.0.1/16
-            - Node 2: 10.13.0.2/16
-        - Storage
-            - Node 1: 10.11.0.1/24
-            - Node 1: 10.12.0.1/24
-            - Node 2: 10.11.0.2/24
-            - Node 2: 10.12.0.2/24
+                | MAC address | Name | IP address | Subnet mask |
+                | ---- | ---- | ---- | ---- |
+                | 00-15-5D-00-04-**02** | Storage 1 | 10.**11**.0.**1** | 24 |
+                | 00-15-5D-00-04-**03** | Storage 2 | 10.**12**.0.**1** | 24 |
+                | 00-15-5D-00-04-**04** | Compute | 10.**13**.0.**1** | 16 |
 
--->
+            - Node 2
 
-
+                | MAC address | Name | IP address | Subnet mask |
+                | ---- | ---- | ---- | ---- |
+                | 00-15-5D-00-04-**06** | Storage 1 | 10.**11**.0.**2** | 24 |
+                | 00-15-5D-00-04-**07** | Storage 2 | 10.**12**.0.**2** | 24 |
+                | 00-15-5D-00-04-**08** | Compute | 10.**13**.0.**2** | 16 |
 
 2. クラウド監視を構成します。
 
