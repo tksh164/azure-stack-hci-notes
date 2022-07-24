@@ -55,7 +55,7 @@
             - Node 2: 10.10.11.2/24
             - Node 2: 10.10.12.2/24
 
-<!-
+<!--
 
     - One physical network adapter for management
         - Management
