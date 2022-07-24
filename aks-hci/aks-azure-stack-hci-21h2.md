@@ -55,6 +55,27 @@
             - Node 2: 10.10.11.2/24
             - Node 2: 10.10.12.2/24
 
+<!-
+
+    - One physical network adapter for management
+        - Management
+            - Node 1: 192.168.0.2/16
+            - Node 2: 192.168.0.3/16
+
+    - Create one virtual switch for compute only
+        - Compute
+            - Node 1: 10.13.0.1/16
+            - Node 2: 10.13.0.2/16
+        - Storage
+            - Node 1: 10.11.0.1/24
+            - Node 1: 10.12.0.1/24
+            - Node 2: 10.11.0.2/24
+            - Node 2: 10.12.0.2/24
+
+-->
+
+
+
 2. クラウド監視を構成します。
 
     クラウド監視用のストレージ アカウントを作成し、そのストレージ アカウントを使用して Azure Stack HCI クラスターの監視を構成します。
