@@ -175,7 +175,49 @@
     DiagnosticLevel    : Basic
     ```
 
-## AKS on HCI を構成するための Azure VM (Hyper-V) ホスト上の準備
+参考情報:
+
+- [Connect and manage Azure Stack HCI registration](https://docs.microsoft.com/en-us/azure-stack/hci/deploy/register-with-azure)
+
+
+## AKS on HCI を構成するための準備 - Azure サブスクリプション
+
+Cloud Shell などを使用して Azure サブスクリプションにリソース プロバイダーを登録します。
+
+```powershell
+Register-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes'
+Register-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguration'
+Register-AzResourceProvider -ProviderNamespace 'Microsoft.ExtendedLocation'
+```
+
+なお、すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。
+
+```powershell
+PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes','Microsoft.KubernetesConfiguration','Microsoft.ExtendedLocation'
+
+ProviderNamespace : Microsoft.Kubernetes
+RegistrationState : Registered
+ResourceTypes     : {connectedClusters}
+Locations         : {West Europe, East US, West Central US, South Central US…}
+
+ProviderNamespace : Microsoft.Kubernetes
+RegistrationState : Registered
+ResourceTypes     : {locations}
+Locations         : {}
+
+ProviderNamespace : Microsoft.Kubernetes
+RegistrationState : Registered
+ResourceTypes     : {locations/operationStatuses}
+Locations         : {East US 2 EUAP, West Europe, East US, West Central US…}
+...(省略)..
+```
+
+参考情報:
+
+- [Connect an Azure Kubernetes Service on Azure Stack HCI cluster to Azure Arc-enabled Kubernetes](https://docs.microsoft.com/en-us/azure-stack/aks-hci/connect-to-arc)
+
+
+## AKS on HCI を構成するための準備 - Azure VM (Hyper-V) ホスト
 
 ### NAT を構成
 
@@ -211,16 +253,7 @@ AzSHCINAT         192.168.0.0/16                     True
 AzSHCINAT-Compute 10.10.13.0/24                      True
 ```
 
-## AKS on HCI を構成するための Azure サブスクリプション上の準備
-
-リソース プロバイダーを登録します。
-
-```powershell
-Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes'
-Get-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguration'
-```
-
-## AKS on HCI を構成するための Azure Stack HCI クラスターと HCI ノード上の準備
+## AKS on HCI を構成するための準備 - Azure Stack HCI クラスターと HCI ノード
 
 ### AKS on HCI 用 CSV ボリュームの作成
 
