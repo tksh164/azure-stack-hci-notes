@@ -221,7 +221,7 @@ Locations         : {East US 2 EUAP, West Europe, East US, West Central US…}
 
 ### NAT を構成
 
-コンピューティング トラフィック用のネットワークの NAT を構成します。これにより、コンピューティング トラフィック用のネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
+コンピューティング トラフィック用ネットワークの NAT を構成します。これにより、コンピューティング トラフィック用ネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
 
 ```powershell
 Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.10.13.254 -PrefixLength 24
@@ -253,7 +253,7 @@ AzSHCINAT         192.168.0.0/16                     True
 AzSHCINAT-Compute 10.10.13.0/24                      True
 ```
 
-- コンピューティング トラフィック用のネットワークのアドレス空間複数のサブネットに分ける場合
+- コンピューティング トラフィック用ネットワークのアドレス空間複数をサブネットに分ける場合
 
     ```powershell
     # Subnet 0
