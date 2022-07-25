@@ -103,17 +103,19 @@
 1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
-    Install-PackageProvider -Name 'NuGet' -Force -Verbose
-    Install-Module -Name 'PowershellGet' -Scope AllUsers -Confirm:$false -SkipPublisherCheck -Force -Verbose
-
-    Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Confirm:$false -Verbose
+    Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
+    Install-Module -Name 'PowerShellGet' -Scope AllUsers -Force -Verbose
     ```
 
-2. PowerShell を閉じて起動し直します。
+    インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を閉じて起動し直した後で Az.StackHCI モジュールをインストールします。
 
-    - インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
+    ```powershell
+    Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Force -Verbose
+    ```
 
-3. Azure Stack HCI クラスターを Azure に登録します。
+3. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
+
+4. Azure Stack HCI クラスターを Azure に登録します。
 
     ```powershell
     $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
@@ -145,7 +147,7 @@
     Register-AzStackHCI @params
     ```
 
-3. Azure Stack HCI クラスターの登録状態を確認します。
+5. Azure Stack HCI クラスターの登録状態を確認します。
 
     ```powershell
     Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
