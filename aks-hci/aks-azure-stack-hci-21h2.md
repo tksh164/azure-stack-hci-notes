@@ -217,11 +217,11 @@ Locations         : {East US 2 EUAP, West Europe, East US, West Central US…}
 - [Connect an Azure Kubernetes Service on Azure Stack HCI cluster to Azure Arc-enabled Kubernetes](https://docs.microsoft.com/en-us/azure-stack/aks-hci/connect-to-arc)
 
 
-## AKS on HCI を構成するための準備 - Azure VM (Hyper-V) ホスト
+## AKS on HCI を構成するための準備 - Azure VM (Hyper-V ホスト)
 
 ### NAT を構成
 
-コンピューティング トラフィック用ネットワークの NAT を構成します。これにより、コンピューティング トラフィック用ネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
+Azure VM (Hyper-V ホスト) 上でコンピューティング トラフィック用ネットワークの NAT を構成します。これにより、コンピューティング トラフィック用ネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
 
 ```powershell
 Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.10.13.254 -PrefixLength 24
@@ -293,7 +293,7 @@ AzSHCINAT-Compute 10.10.13.0/24                      True
 
 ### AKS on HCI 用 CSV ボリュームの作成
 
-Azure VM (Hyper-V) 上から PowerShell Remoting で Azure Stack HCI クラスター上に新しい AKS on HCI 用 CSV ボリュームを作成します。
+Azure VM (Hyper-V) 上から PowerShell Remoting を使用して Azure Stack HCI クラスター上に新しい AKS on HCI 用 CSV ボリュームを作成します。
 
 ```powershell
 Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
@@ -303,24 +303,20 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 ### HCI ノードへの AksHci PowerShell モジュールのインストール
 
-Azure VM (Hyper-V) 上から PowerShell Remoting で各 Azure Stack HCI クラスター ノード上に AksHci PowerShell モジュールのインストールします。
+Azure VM (Hyper-V) 上から PowerShell Remoting を使用して各 Azure Stack HCI クラスター ノード上に AksHci PowerShell モジュールのインストールします。
 
 ```powershell
 $hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
 
 Invoke-Command -ComputerName $hciNodes -ScriptBlock {
-    Install-PackageProvider -Name 'NuGet' -Force -Verbose
-    Install-Module -Name 'PowershellGet' -Confirm:$false -SkipPublisherCheck -Force -Verbose
+    Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
+    Install-Module -Name 'PowerShellGet' -Scope AllUsers -Force -Verbose
 }
-```
-
-```powershell
-$hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
 
 Invoke-Command -ComputerName $hciNodes -ScriptBlock {
-    Install-Module -Name 'Az.Accounts' -Repository 'PSGallery' -RequiredVersion 2.2.4 -Force -Verbose
-    Install-Module -Name 'Az.Resources' -Repository 'PSGallery' -RequiredVersion 3.2.0 -Force -Verbose
-    Install-Module -Name 'AzureAD' -Repository 'PSGallery' -RequiredVersion 2.0.2.128 -Force -Verbose
+    Install-Module -Name 'Az.Accounts' -Repository 'PSGallery' -RequiredVersion '2.2.4' -Force -Verbose
+    Install-Module -Name 'Az.Resources' -Repository 'PSGallery' -RequiredVersion '3.2.0' -Force -Verbose
+    Install-Module -Name 'AzureAD' -Repository 'PSGallery' -RequiredVersion '2.0.2.128' -Force -Verbose
     Install-Module -Name 'AksHci' -Repository 'PSGallery' -AcceptLicense -Force -Verbose 
 }
 ```
@@ -329,8 +325,18 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 [Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して HCI ノードですべての要件が満たされているかを確認します。
 
+[vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。ローカル Administrator としての実行で問題ありません。
+
 ```powershell
 Initialize-AksHciNode
+```
+
+実行結果の確認例:
+
+```powershell
+PS C:\> Initialize-AksHciNode
+WinRM service is already running on this machine.
+WinRM is already set up for remote management on this computer.
 ```
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
@@ -519,6 +525,7 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 #### vmconnect.exe
 
+- Hyper-V マネージャーから vmconnect.exe を使用して HCI ノード VM のコンソールに接続できます。
 - 拡張セッションを使用して接続できます。
 
 - 資格情報
