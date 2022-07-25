@@ -103,7 +103,7 @@
 1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
-    Install-PackageProvider -Name NuGet -Force -Verbose
+    Install-PackageProvider -Name 'NuGet' -Force -Verbose
     Install-Module -Name 'PowershellGet' -Scope AllUsers -Confirm:$false -SkipPublisherCheck -Force -Verbose
 
     Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Confirm:$false -Verbose
