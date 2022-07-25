@@ -374,8 +374,8 @@ $params = @{
     DnsServers         = '192.168.0.1'
     IpAddressPrefix    = '10.10.13.0/24'
     K8sNodeIpPoolStart = '10.10.13.11'
-    K8sNodeIpPoolEnd   = '10.10.13.120'
-    VipPoolStart       = '10.10.13.121'
+    K8sNodeIpPoolEnd   = '10.10.13.40'
+    VipPoolStart       = '10.10.13.41'
     VipPoolEnd         = '10.10.13.250'
 }
 $vnet = New-AksHciNetworkSetting @params
@@ -391,8 +391,8 @@ $vnet = New-AksHciNetworkSetting @params
         DnsServers         = '192.168.0.1'
         IpAddressPrefix    = '10.13.0.0/24'
         K8sNodeIpPoolStart = '10.13.0.11'
-        K8sNodeIpPoolEnd   = '10.13.0.120'
-        VipPoolStart       = '10.13.0.121'
+        K8sNodeIpPoolEnd   = '10.13.0.40'
+        VipPoolStart       = '10.13.0.41'
         VipPoolEnd         = '10.13.0.250'
     }
     $vnet = New-AksHciNetworkSetting @params
