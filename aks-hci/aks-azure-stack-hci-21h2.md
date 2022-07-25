@@ -327,7 +327,7 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 ### HCI ノードの要件の検証
 
-[Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して HCI ノードですべての要件が満たされているかを確認します。
+[Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して全ての HCI ノードで要件が満たされているかを確認します。
 
 [vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。ローカル Administrator としての実行で問題ありません。
 
