@@ -257,7 +257,7 @@ AzSHCINAT-Compute 10.10.13.0/24                      True
 
 ### AKS on HCI 用 CSV ボリュームの作成
 
-Azure VM (Hyper-V) 上から PowerShell Remoting で Azure Stack HCI クラスター上に新しい AKS on HCI 用 CSV ボリュームを作成する。
+Azure VM (Hyper-V) 上から PowerShell Remoting で Azure Stack HCI クラスター上に新しい AKS on HCI 用 CSV ボリュームを作成します。
 
 ```powershell
 Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
@@ -267,7 +267,7 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 ### HCI ノードへの AksHci PowerShell モジュールのインストール
 
-Azure VM (Hyper-V) 上から PowerShell Remoting で各 Azure Stack HCI クラスター ノード上に AksHci PowerShell モジュールのインストールする。
+Azure VM (Hyper-V) 上から PowerShell Remoting で各 Azure Stack HCI クラスター ノード上に AksHci PowerShell モジュールのインストールします。
 
 ```powershell
 $hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
