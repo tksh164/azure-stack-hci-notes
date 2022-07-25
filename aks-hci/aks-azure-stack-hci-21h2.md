@@ -321,6 +321,10 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 }
 ```
 
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
+
 ### HCI ノードの要件の検証
 
 [Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して HCI ノードですべての要件が満たされているかを確認します。
@@ -338,6 +342,11 @@ PS C:\> Initialize-AksHciNode
 WinRM service is already running on this machine.
 WinRM is already set up for remote management on this computer.
 ```
+
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
+
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
 
@@ -359,6 +368,10 @@ $params = @{
 }
 $vnet = New-AksHciNetworkSetting @params
 ```
+
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
 
 ### AKS on HCI の構成を作成
 
@@ -387,6 +400,10 @@ $params = @{
 Set-AksHciConfig @params
 ```
 
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
+
 ### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
 
 [Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure に登録するための構成を作成します。
@@ -408,6 +425,10 @@ $params = @{
 Set-AksHciRegistration @params
 ```
 
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
+
 ### 管理クラスターを作成
 
 [Install-AksHci](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/install-akshci) コマンドレットを使用して管理クラスターを作成します。
@@ -416,6 +437,10 @@ Set-AksHciRegistration @params
 $VerbosePreference = 'Continue'
 Install-AksHci -Verbose
 ```
+
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
 
 ## ワークロード クラスターの作成
 
@@ -435,6 +460,10 @@ $params = @{
 }
 New-AksHciCluster @params
 ```
+
+参考情報:
+
+- [Quickstart: Set up an Azure Kubernetes Service host on Azure Stack HCI and Windows Server and deploy a workload cluster using PowerShell](https://docs.microsoft.com/en-us/azure-stack/aks-hci/kubernetes-walkthrough-powershell)
 
 ## AKS on HCI の削除
 
