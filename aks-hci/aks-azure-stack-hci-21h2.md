@@ -329,7 +329,10 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 [Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して全ての HCI ノードで要件が満たされているかを確認します。
 
-[vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。ローカル Administrator としての実行で問題ありません。
+ポイント:
+
+- [vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。
+- ローカル Administrator としての実行で問題ありません。
 
 ```powershell
 Initialize-AksHciNode
@@ -349,6 +352,15 @@ WinRM is already set up for remote management on this computer.
 
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
+
+ポイント:
+
+- [vmconnect.exe](#vmconnectexe) を使用して、いずれか 1 台の Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で手順を実行します。
+- 既定で実行される PowerShell ウィンドウはローカル Administrator として実行されているため、Domain Admin として実行した PowerShell を使用します。
+
+    ```powershell
+    runas /user:azshci\AzureUser powershell
+    ```
 
 ### 管理クラスターで使用する仮想ネットワーク構成を作成
 
