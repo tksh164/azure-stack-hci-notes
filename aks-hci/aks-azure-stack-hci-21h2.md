@@ -55,7 +55,7 @@
             - Node 2: 10.10.11.2/24
             - Node 2: 10.10.12.2/24
 
-        - Compute ネットワークのアドレス空間を広く確保する場合
+        - コンピューティング トラフィック用のネットワークのアドレス空間を広く確保する場合
 
             - azshcinode**01**.azshci.local
 
@@ -182,7 +182,7 @@
 
 ## AKS on HCI を構成するための準備 - Azure サブスクリプション
 
-Cloud Shell などを使用して Azure サブスクリプションにリソース プロバイダーを登録します。
+[Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションにリソース プロバイダーを登録します。
 
 ```powershell
 Register-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes'
@@ -221,9 +221,10 @@ Locations         : {East US 2 EUAP, West Europe, East US, West Central US…}
 
 ### NAT を構成
 
+コンピューティング トラフィック用のネットワークの NAT を構成します。これにより、コンピューティング トラフィック用のネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
+
 ```powershell
 Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.10.13.254 -PrefixLength 24
-
 New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.10.13.0/24
 ```
 
@@ -231,7 +232,6 @@ New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.10.13.
 
 ```powershell
 Get-NetAdapter -Name '*InternalNAT*' | Get-NetIPAddress | Format-Table -Property InterfaceIndex,InterfaceAlias,IPAddress,PrefixLength,AddressFamily
-
 Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
 ```
 
@@ -252,6 +252,42 @@ Name              InternalIPInterfaceAddressPrefix Active
 AzSHCINAT         192.168.0.0/16                     True
 AzSHCINAT-Compute 10.10.13.0/24                      True
 ```
+
+- コンピューティング トラフィック用のネットワークのアドレス空間複数のサブネットに分ける場合
+
+    ```powershell
+    # Subnet 0
+    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.0.254 -PrefixLength 24
+    New-NetNat -Name 'AzSHCINAT-Compute0' -InternalIPInterfaceAddressPrefix 10.13.0.0/24
+
+    # Subnet 1
+    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.1.254 -PrefixLength 24
+    New-NetNat -Name 'AzSHCINAT-Compute1' -InternalIPInterfaceAddressPrefix 10.13.1.0/24
+
+    # Subnet 2
+    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.2.254 -PrefixLength 24
+    New-NetNat -Name 'AzSHCINAT-Compute2' -InternalIPInterfaceAddressPrefix 10.13.2.0/24
+    ```
+
+    ```powershell
+    PS C:\> Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
+
+    Name               InternalIPInterfaceAddressPrefix Active
+    ----               -------------------------------- ------
+    AzSHCINAT          192.168.0.0/16                     True
+    AzSHCINAT-Compute0 10.13.0.0/24                       True
+    AzSHCINAT-Compute1 10.13.1.0/24                       True
+    AzSHCINAT-Compute2 10.13.2.0/24                       True
+    ```
+<!--
+- コンピューティング トラフィック用のネットワークのアドレス空間を広く確保した場合
+
+    ```powershell
+    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.0.254 -PrefixLength 16
+
+    New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.13.0.0/16
+    ```
+-->
 
 ## AKS on HCI を構成するための準備 - Azure Stack HCI クラスターと HCI ノード
 
