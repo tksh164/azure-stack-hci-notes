@@ -253,7 +253,7 @@ AzSHCINAT         192.168.0.0/16                     True
 AzSHCINAT-Compute 10.10.13.0/24                      True
 ```
 
-- コンピューティング トラフィック用ネットワークのアドレス空間複数をサブネットに分ける場合
+- コンピューティング トラフィック用ネットワークのアドレス空間を複数サブネットに分ける場合
 
     ```powershell
     # Subnet 0
@@ -373,13 +373,30 @@ $params = @{
     Gateway            = '10.10.13.254'
     DnsServers         = '192.168.0.1'
     IpAddressPrefix    = '10.10.13.0/24'
-    K8sNodeIpPoolStart = '10.10.13.10'
-    K8sNodeIpPoolEnd   = '10.10.13.149'
-    VipPoolStart       = '10.10.13.150'
+    K8sNodeIpPoolStart = '10.10.13.11'
+    K8sNodeIpPoolEnd   = '10.10.13.120'
+    VipPoolStart       = '10.10.13.121'
     VipPoolEnd         = '10.10.13.250'
 }
 $vnet = New-AksHciNetworkSetting @params
 ```
+
+- コンピューティング トラフィック用ネットワークのアドレス空間を複数サブネットに分けてある場合
+
+    ```powershell
+    $params = @{
+        Name               = 'akshci-main-network'
+        VSwitchName        = 'ComputeSwitch'
+        Gateway            = '10.13.0.254'
+        DnsServers         = '192.168.0.1'
+        IpAddressPrefix    = '10.13.0.0/24'
+        K8sNodeIpPoolStart = '10.13.0.11'
+        K8sNodeIpPoolEnd   = '10.13.0.120'
+        VipPoolStart       = '10.13.0.121'
+        VipPoolEnd         = '10.13.0.250'
+    }
+    $vnet = New-AksHciNetworkSetting @params
+    ```
 
 参考情報:
 
@@ -392,11 +409,10 @@ $vnet = New-AksHciNetworkSetting @params
 管理クラスターのコントロール プレーン VM のスペックが低いと色々な処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
 
 ```powershell
-$VerbosePreference = 'Continue'
-
 $clusterRoleName = 'akshci-mgmt-cluster-{0}' -f (Get-Date).ToString('yyMMdd-HHmm')
 $baseDir         = 'C:\ClusterStorage\AksHciVol\AKS-HCI'
 
+$VerbosePreference = 'Continue'
 $params = @{
     ImageDir            = Join-Path -Path $baseDir -ChildPath 'Images'
     WorkingDir          = Join-Path -Path $baseDir -ChildPath 'WorkingDir'
@@ -420,13 +436,14 @@ Set-AksHciConfig @params
 
 [Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure に登録するための構成を作成します。
 
-```powershell
-$VerbosePreference = 'Continue'
+任意のデバイス上の Web ブラウザーで https://microsoft.com/devicelogin にアクセスして表示されたコードを入力し、Azure AD 認証を行います。
 
+```powershell
 $tenantId          = '00000000-1111-2222-3333-444444444444'
 $subscriptionId    = '55555555-6666-7777-8888-999999999999'
 $resourceGroupName = 'aksazshci'
 
+$VerbosePreference = 'Continue'
 $params = @{
     TenantId                = $tenantId           # The Azure AD tenant that associated with Azure subscription to create the Azure Arc-enabled Kubernetes resource for the management cluster.
     SubscriptionId          = $subscriptionId     # The Azure subscription to create the Azure Arc-enabled Kubernetes resource for the management cluster.
