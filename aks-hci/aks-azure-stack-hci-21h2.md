@@ -190,7 +190,7 @@ Register-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguratio
 Register-AzResourceProvider -ProviderNamespace 'Microsoft.ExtendedLocation'
 ```
 
-なお、すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。
+なお、すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度登録コマンドを実行したとしても影響はありません。
 
 ```powershell
 PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes','Microsoft.KubernetesConfiguration','Microsoft.ExtendedLocation'
