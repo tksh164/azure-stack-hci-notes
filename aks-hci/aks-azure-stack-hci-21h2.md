@@ -158,6 +158,10 @@
     登録状態を確認した結果の例:
 
     ```powershell
+    PS C:\> Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    >>     Get-AzureStackHCI
+    >> }
+
     PSComputerName     : azshcinode01.azshci.local
     RunspaceId         : 791b714b-ba27-4b84-aa2e-dc62c59f7d3c
     ClusterStatus      : Clustered
