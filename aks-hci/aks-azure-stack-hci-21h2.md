@@ -177,14 +177,6 @@
 
 ## AKS on HCI を構成するための Azure VM (Hyper-V) ホスト上の準備
 
-### ボリュームの作成
-
-```powershell
-Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
-    New-Volume -FriendlyName 'AksHciVol' -StoragePoolFriendlyName 'S2D*' -FileSystem CSVFS_ReFS -UseMaximumSize -ProvisioningType Fixed -ResiliencySettingName Mirror -Verbose
-}
-```
-
 ### NAT を構成
 
 ```powershell
@@ -228,9 +220,21 @@ Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes'
 Get-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguration'
 ```
 
-## AKS on HCI を構成するための HCI ノード上の準備
+## AKS on HCI を構成するための Azure Stack HCI クラスターと HCI ノード上の準備
+
+### AKS on HCI 用 CSV ボリュームの作成
+
+Azure VM (Hyper-V) 上から PowerShell Remoting で Azure Stack HCI クラスター上に新しい AKS on HCI 用 CSV ボリュームを作成する。
+
+```powershell
+Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    New-Volume -FriendlyName 'AksHciVol' -StoragePoolFriendlyName 'S2D*' -FileSystem CSVFS_ReFS -UseMaximumSize -ProvisioningType Fixed -ResiliencySettingName Mirror -Verbose
+}
+```
 
 ### HCI ノードへの AksHci PowerShell モジュールのインストール
+
+Azure VM (Hyper-V) 上から PowerShell Remoting で各 Azure Stack HCI クラスター ノード上に AksHci PowerShell モジュールのインストールする。
 
 ```powershell
 $hciNodes = 'azshcinode01.azshci.local', 'azshcinode02.azshci.local'
