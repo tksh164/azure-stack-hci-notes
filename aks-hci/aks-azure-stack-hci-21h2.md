@@ -1,6 +1,6 @@
 # AKS on Azure Stack HCI 21H2
 
-![Configuration Overview](./media/configuration-overview.svg)
+![Configuration Overview](./media/aks-azure-stack-hci-21h2-overview.svg)
 
 ## Azure Stack HCI クラスターの作成
 
