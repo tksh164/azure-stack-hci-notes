@@ -598,6 +598,8 @@ Get-AksHciCredential -Name 'akswc1'
 
 ### Azure Stack HCI の登録に関する操作
 
+- TODO
 
 ### ログの確認
 
+- TODO
