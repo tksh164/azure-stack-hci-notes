@@ -45,15 +45,15 @@
 
         - azshcinode**01**.azshci.local
 
-            | MAC address | Name | IP address | Subnet mask | Notes |
+            | MAC アドレス | 名前 | IP アドレス | サブネット マスク | 説明 |
             | ---- | ---- | ---- | ---- | ---- |
-            | 00-15-5D-00-04-**01** | Management<br/>(変更前の時点では　Ethernet N) | 192.168.0.2 | 16 | 管理トラフィック用 |
+            | 00-15-5D-00-04-**01** | Management<br/>(変更前の時点では Ethernet N) | 192.168.0.2 | 16 | 管理トラフィック用 |
 
         - azshcinode**02**.azshci.local
 
-            | MAC address | Name | IP address | Subnet mask | Notes |
+            | MAC アドレス | 名前 | IP アドレス | サブネット マスク | 説明 |
             | ---- | ---- | ---- | ---- | ---- |
-            | 00-15-5D-00-04-**05** | Management<br/>(変更前の時点では　Ethernet N) | 192.168.0.3 | 16 | 管理トラフィック用 |
+            | 00-15-5D-00-04-**05** | Management<br/>(変更前の時点では Ethernet N) | 192.168.0.3 | 16 | 管理トラフィック用 |
 
     - **Create one virtual switch for compute only** を選択します。
 
@@ -67,7 +67,7 @@
 
         - azshcinode**01**.azshci.local
 
-            | MAC address | Name | IP address | Subnet mask | Notes |
+            | MAC アドレス | 名前 | IP アドレス | サブネット マスク | 説明 |
             | ---- | ---- | ---- | ---- | ---- |
             | 00-15-5D-00-04-**02** | Storage 1 | 10.10.11.1 | 24 | ストレージ トラフィック用 1 |
             | 00-15-5D-00-04-**03** | Storage 2 | 10.10.12.1 | 24 | ストレージ トラフィック用 2 |
@@ -75,7 +75,7 @@
 
         - azshcinode**02**.azshci.local
 
-            | MAC address | Name | IP address | Subnet mask | Notes |
+            | MAC アドレス | 名前 | IP アドレス | サブネット マスク | 説明 |
             | ---- | ---- | ---- | ---- | ---- |
             | 00-15-5D-00-04-**06** | Storage 1 | 10.10.11.2 | 24 | ストレージ トラフィック用 1 |
             | 00-15-5D-00-04-**07** | Storage 2 | 10.10.12.2 | 24 | ストレージ トラフィック用 2 |
@@ -198,7 +198,7 @@ Register-AzResourceProvider -ProviderNamespace 'Microsoft.KubernetesConfiguratio
 Register-AzResourceProvider -ProviderNamespace 'Microsoft.ExtendedLocation'
 ```
 
-なお、すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度登録コマンドを実行したとしても影響はありません。
+すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
 
 ```powershell
 PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.Kubernetes','Microsoft.KubernetesConfiguration','Microsoft.ExtendedLocation'
