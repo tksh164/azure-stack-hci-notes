@@ -1,4 +1,4 @@
-# AKS on Azure Stack HCI 21H2
+# AKS on Azure Stack HCI 21H2 (コンピューティング トラフィック用サブネット拡張版)
 
 ## Azure Stack HCI クラスターの作成
 
@@ -27,10 +27,11 @@
 2. デプロイ完了後、Azure VM (Hyper-V ホスト) に RDP 接続して Azure VM (Hyper-V ホスト) にすべての更新プログラムを適用します。
 
     - AKS on HCI の構成し始めてから更新プログラムが適用されて再起動が発生してしまうことを避けられます。
+    - コストを節約するために既定では OS ディスクは Standard HDD LRS となっているため、更新プログラムの適用にはそれなりに時間を要します。
 
 3. Azure VM (Hyper-V ホスト) 上の HCI ノード VM の RAM サイズを可能な範囲で増やしておきます。
 
-    - Standard_E16s_v4 で 2 ノードなら、**57344 MB** 程度に増やしておくのが良いです。
+    - Standard_E16s_v4 で 2 ノード クラスターなら、**57344 MB** 程度に増やしておくのが良いです。
         - 56 GB = (HCI ノード VM RAM: 128 GB - Hyper-V ホスト分: 16 GB) / 2 ノード。
         - VMRS ファイル サイズは 2 ノード分で 112 GB です。
 
@@ -40,38 +41,47 @@
 
 1. ホスト ネットワークを構成します。
 
-    - One physical network adapter for management
-        - Management
-            - Node 1: 192.168.0.2/16
-            - Node 2: 192.168.0.3/16
+    - **One physical network adapter for management** を選択します。
 
-    - Create one virtual switch for compute only
-        - Compute
-            - Node 1: 10.10.13.1/24
-            - Node 2: 10.10.13.2/24
-        - Storage
-            - Node 1: 10.10.11.1/24
-            - Node 1: 10.10.12.1/24
-            - Node 2: 10.10.11.2/24
-            - Node 2: 10.10.12.2/24
+        - azshcinode**01**.azshci.local
 
-        - コンピューティング トラフィック用のネットワークのアドレス空間を広く確保する場合
+            | MAC address | Name | IP address | Subnet mask | Notes |
+            | ---- | ---- | ---- | ---- | ---- |
+            | 00-15-5D-00-04-**01** | Management<br/>(変更前の時点では　Ethernet N) | 192.168.0.2 | 16 | 管理トラフィック用 |
 
-            - azshcinode**01**.azshci.local
+        - azshcinode**02**.azshci.local
 
-                | MAC address | Name | IP address | Subnet mask | Notes |
-                | ---- | ---- | ---- | ---- | ---- |
-                | 00-15-5D-00-04-**02** | Storage 1 | 10.**11**.0.**1** | 24 | ストレージ トラフィック用 1 |
-                | 00-15-5D-00-04-**03** | Storage 2 | 10.**12**.0.**1** | 24 | ストレージ トラフィック用 2 |
-                | 00-15-5D-00-04-**04** | Compute | 10.**13**.0.**1** | **16** | コンピューティング トラフィック用 |
+            | MAC address | Name | IP address | Subnet mask | Notes |
+            | ---- | ---- | ---- | ---- | ---- |
+            | 00-15-5D-00-04-**05** | Management<br/>(変更前の時点では　Ethernet N) | 192.168.0.3 | 16 | 管理トラフィック用 |
 
-            - azshcinode**02**.azshci.local
+    - **Create one virtual switch for compute only** を選択します。
 
-                | MAC address | Name | IP address | Subnet mask | Notes |
-                | ---- | ---- | ---- | ---- | ---- |
-                | 00-15-5D-00-04-**06** | Storage 1 | 10.**11**.0.**2** | 24 | ストレージ トラフィック用 1 |
-                | 00-15-5D-00-04-**07** | Storage 2 | 10.**12**.0.**2** | 24 | ストレージ トラフィック用 2 |
-                | 00-15-5D-00-04-**08** | Compute | 10.**13**.0.**2** | **16** | コンピューティング トラフィック用 |
+        - azshcinode**01**.azshci.local
+            - 10.10.**13**.1 の IP アドレスを持ったネットワーク アダプターを選択します。
+
+        - azshcinode**02**.azshci.local
+            - 10.10.**13**.2 の IP アドレスを持ったネットワーク アダプターを選択します。
+
+    - 最終的なストレージ トラフィック用とコンピューティング トラフィック用ネットワーク アダプターの構成
+
+        この例では、コンピューティング トラフィック用のネットワークのアドレス空間を広く確保します。
+
+        - azshcinode**01**.azshci.local
+
+            | MAC address | Name | IP address | Subnet mask | Notes |
+            | ---- | ---- | ---- | ---- | ---- |
+            | 00-15-5D-00-04-**02** | Storage 1 | 10.**11**.0.**1** | 24 | ストレージ トラフィック用 1 |
+            | 00-15-5D-00-04-**03** | Storage 2 | 10.**12**.0.**1** | 24 | ストレージ トラフィック用 2 |
+            | 00-15-5D-00-04-**04** | Compute | 10.**13**.0.**1** | **16** | コンピューティング トラフィック用 |
+
+        - azshcinode**02**.azshci.local
+
+            | MAC address | Name | IP address | Subnet mask | Notes |
+            | ---- | ---- | ---- | ---- | ---- |
+            | 00-15-5D-00-04-**06** | Storage 1 | 10.**11**.0.**2** | 24 | ストレージ トラフィック用 1 |
+            | 00-15-5D-00-04-**07** | Storage 2 | 10.**12**.0.**2** | 24 | ストレージ トラフィック用 2 |
+            | 00-15-5D-00-04-**08** | Compute | 10.**13**.0.**2** | **16** | コンピューティング トラフィック用 |
 
 2. クラウド監視を構成します。
 
@@ -223,9 +233,20 @@ Locations         : {East US 2 EUAP, West Europe, East US, West Central US…}
 
 Azure VM (Hyper-V ホスト) 上でコンピューティング トラフィック用ネットワークの NAT を構成します。これにより、コンピューティング トラフィック用ネットワークに接続した VM をインターネット接続可能なように構成できるようになります。
 
+この例では、3 つのコンピューティング トラフィック サブネットのための NAT を構成します。
+
 ```powershell
-Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.10.13.254 -PrefixLength 24
-New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.10.13.0/24
+# Subnet 0
+Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.0.254 -PrefixLength 24
+New-NetNat -Name 'AzSHCINAT-Compute0' -InternalIPInterfaceAddressPrefix 10.13.0.0/24
+
+# Subnet 1
+Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.1.254 -PrefixLength 24
+New-NetNat -Name 'AzSHCINAT-Compute1' -InternalIPInterfaceAddressPrefix 10.13.1.0/24
+
+# Subnet 2
+Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.2.254 -PrefixLength 24
+New-NetNat -Name 'AzSHCINAT-Compute2' -InternalIPInterfaceAddressPrefix 10.13.2.0/24
 ```
 
 構成結果を確認
@@ -240,54 +261,22 @@ Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
 ```powershell
 PS C:\> Get-NetAdapter -Name '*InternalNAT*' | Get-NetIPAddress | Format-Table -Property InterfaceIndex,InterfaceAlias,IPAddress,PrefixLength,AddressFamily
 
-InterfaceIndex InterfaceAlias          IPAddress    PrefixLength AddressFamily
--------------- --------------          ---------    ------------ -------------
-             8 vEthernet (InternalNAT) 192.168.0.1            16          IPv4
-             8 vEthernet (InternalNAT) 10.10.13.254           24          IPv4
+InterfaceIndex InterfaceAlias          IPAddress   PrefixLength AddressFamily
+-------------- --------------          ---------   ------------ -------------
+             4 vEthernet (InternalNAT) 192.168.0.1           16          IPv4
+             4 vEthernet (InternalNAT) 10.13.2.254           24          IPv4
+             4 vEthernet (InternalNAT) 10.13.1.254           24          IPv4
+             4 vEthernet (InternalNAT) 10.13.0.254           24          IPv4
 
 PS C:\> Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
 
-Name              InternalIPInterfaceAddressPrefix Active
-----              -------------------------------- ------
-AzSHCINAT         192.168.0.0/16                     True
-AzSHCINAT-Compute 10.10.13.0/24                      True
+Name               InternalIPInterfaceAddressPrefix Active
+----               -------------------------------- ------
+AzSHCINAT          192.168.0.0/16                     True
+AzSHCINAT-Compute0 10.13.0.0/24                       True
+AzSHCINAT-Compute1 10.13.1.0/24                       True
+AzSHCINAT-Compute2 10.13.2.0/24                       True
 ```
-
-- コンピューティング トラフィック用ネットワークのアドレス空間を複数サブネットに分ける場合
-
-    ```powershell
-    # Subnet 0
-    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.0.254 -PrefixLength 24
-    New-NetNat -Name 'AzSHCINAT-Compute0' -InternalIPInterfaceAddressPrefix 10.13.0.0/24
-
-    # Subnet 1
-    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.1.254 -PrefixLength 24
-    New-NetNat -Name 'AzSHCINAT-Compute1' -InternalIPInterfaceAddressPrefix 10.13.1.0/24
-
-    # Subnet 2
-    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.2.254 -PrefixLength 24
-    New-NetNat -Name 'AzSHCINAT-Compute2' -InternalIPInterfaceAddressPrefix 10.13.2.0/24
-    ```
-
-    ```powershell
-    PS C:\> Get-NetNat | Format-Table -Property Name,InternalIPInterfaceAddressPrefix,Active
-
-    Name               InternalIPInterfaceAddressPrefix Active
-    ----               -------------------------------- ------
-    AzSHCINAT          192.168.0.0/16                     True
-    AzSHCINAT-Compute0 10.13.0.0/24                       True
-    AzSHCINAT-Compute1 10.13.1.0/24                       True
-    AzSHCINAT-Compute2 10.13.2.0/24                       True
-    ```
-<!--
-- コンピューティング トラフィック用のネットワークのアドレス空間を広く確保した場合
-
-    ```powershell
-    Get-NetAdapter -Name '*InternalNAT*' | New-NetIPAddress -AddressFamily IPv4 -IPAddress 10.13.0.254 -PrefixLength 16
-
-    New-NetNat -Name 'AzSHCINAT-Compute' -InternalIPInterfaceAddressPrefix 10.13.0.0/16
-    ```
--->
 
 ## AKS on HCI を構成するための準備 - Azure Stack HCI クラスターと HCI ノード
 
@@ -370,33 +359,16 @@ WinRM is already set up for remote management on this computer.
 $params = @{
     Name               = 'akshci-main-network'
     VSwitchName        = 'ComputeSwitch'
-    Gateway            = '10.10.13.254'
+    Gateway            = '10.13.0.254'
     DnsServers         = '192.168.0.1'
-    IpAddressPrefix    = '10.10.13.0/24'
-    K8sNodeIpPoolStart = '10.10.13.11'
-    K8sNodeIpPoolEnd   = '10.10.13.20'
-    VipPoolStart       = '10.10.13.21'
-    VipPoolEnd         = '10.10.13.30'
+    IpAddressPrefix    = '10.13.0.0/24'
+    K8sNodeIpPoolStart = '10.13.0.11'
+    K8sNodeIpPoolEnd   = '10.13.0.40'
+    VipPoolStart       = '10.13.0.41'
+    VipPoolEnd         = '10.13.0.250'
 }
 $vnet = New-AksHciNetworkSetting @params
 ```
-
-- コンピューティング トラフィック用ネットワークのアドレス空間を複数サブネットに分けてある場合
-
-    ```powershell
-    $params = @{
-        Name               = 'akshci-main-network'
-        VSwitchName        = 'ComputeSwitch'
-        Gateway            = '10.13.0.254'
-        DnsServers         = '192.168.0.1'
-        IpAddressPrefix    = '10.13.0.0/24'
-        K8sNodeIpPoolStart = '10.13.0.11'
-        K8sNodeIpPoolEnd   = '10.13.0.40'
-        VipPoolStart       = '10.13.0.41'
-        VipPoolEnd         = '10.13.0.250'
-    }
-    $vnet = New-AksHciNetworkSetting @params
-    ```
 
 参考情報:
 
@@ -406,7 +378,7 @@ $vnet = New-AksHciNetworkSetting @params
 
 [Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。
 
-管理クラスターのコントロール プレーン VM のスペックが低いと色々な処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
+管理クラスターのコントロール プレーン VM のスペックが低いと処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
 
 ```powershell
 $clusterRoleName = 'akshci-mgmt-cluster-{0}' -f (Get-Date).ToString('yyMMdd-HHmm')
@@ -422,7 +394,7 @@ $params = @{
     CloudServiceCidr    = '192.168.0.11/16'
     VNet                = $vnet
     KvaName             = $clusterRoleName
-    ControlplaneVmSize  = 'Standard_D4s_v3'
+    ControlplaneVmSize  = 'Standard_D4s_v3'  # Standard_A4_v2
     Verbose             = $true
 }
 Set-AksHciConfig @params
@@ -613,6 +585,16 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 - Azure VM (Hyper-V ホスト) 上にはフェールオーバー クラスター マネージャーがインストールされています。
 - `azshciclus.azshci.local` に接続すればフェールオーバー クラスター マネージャーから操作できます。
+
+### kubectl によるワークロード クラスターへのアクセス
+
+kubectl を使用する際は、[Get-AksHciCredential](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcicredential) コマンドレットで使用するワークロード クラスターを切り替えてから操作します。
+
+Get-AksHciCredential コマンドレットを使用すると、指定したワークロード クラスターの kubeconfig ファイルを kubectl の既定の kubeconfig ファイルとして設定してくれます。
+
+```powershell
+Get-AksHciCredential -Name 'akswc1'
+```
 
 ### Azure Stack HCI の登録に関する操作
 
