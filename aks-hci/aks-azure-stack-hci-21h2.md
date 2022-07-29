@@ -130,7 +130,7 @@
 
 3. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
 
-4. Azure Stack HCI クラスターを Azure に登録します。
+4. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
 
     ```powershell
     $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
