@@ -10,9 +10,9 @@
 
 [Deploy your Azure VM (Prerequisite)](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/1_DeployAzureVM.md) を参考にして Azure VM (Hyper-V ホスト) をデプロイします。
 
-1. カスタム ARM テンプレートを使用してデプロイします。デプロイに要する時間は 35 分程度です。
+1. カスタム ARM テンプレートを使用してデプロイします。デプロイに要する時間は **35 分程度**です。
 
-    時々デプロイが失敗します。失敗した場合は、失敗したリソース グループを削除しつつ、再デプロイします。多くても 2 ～ 3 回デプロイすれば大概成功します。
+    稀にデプロイが失敗します。失敗した場合は、失敗したリソース グループを削除しつつ、再デプロイします。多くても 2 ～ 3 回目で大概成功します。
 
     - Virtual Machine Size: **Standard_E16s_v4**
         - VM サイズは Standard_E16s_v4 が事実上の最低サイズです。これ以上小さいサイズを選択した場合、環境は作れたとしてもその後の検証がほぼ何もできません。
@@ -83,7 +83,14 @@
             | 00-15-5D-00-04-**07** | Storage 2 | 10.**12**.0.**2** | 24 | ストレージ トラフィック用 2 |
             | 00-15-5D-00-04-**08** | Compute | 10.**13**.0.**2** | **16** | コンピューティング トラフィック用 |
 
-2. クラウド監視を構成します。
+2. クラスターを作成します。
+
+    - クラスター名: **AZSHCICLUS**
+    - クラスター IP: **192.168.0.4**
+
+3. Storage Spaces Direct を有効化します。
+
+4. クラウド監視を構成します。
 
     クラウド監視用のストレージ アカウントを作成し、そのストレージ アカウントを使用して Azure Stack HCI クラスターの監視を構成します。
 
@@ -125,7 +132,7 @@
 
 3. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
 
-4. Azure Stack HCI クラスターを Azure に登録します。
+4. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
 
     ```powershell
     $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
