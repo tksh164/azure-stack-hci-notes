@@ -116,7 +116,38 @@
 
 [Integrate Azure Stack HCI 21H2 with Azure](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/3_AzSHCIIntegration.md) を参考にして Azure Stack HCI クラスターを Azure に登録します。
 
-1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
+
+1. [Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
+
+    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録していおきます。
+
+    ```powershell
+    Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+    ```
+
+    すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
+
+    ```powershell
+    PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {operations}
+    Locations         : {}
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {locations}
+    Locations         : {}
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {locations/operationstatuses}
+    Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
+    ...(省略)..
+    ```
+
+2. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
     Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
