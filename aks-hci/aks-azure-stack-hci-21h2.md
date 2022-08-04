@@ -494,6 +494,12 @@ New-AksHciCluster @params
 Uninstall-AksHci
 ```
 
+Uninstall-AksHci コマンドレットの実行結果として以下のようなメッセージが表示された場合は、Azure 側に Azure Arc-enabled Kubernetes のリソースが残ってしまっているので、Azure potal などから手動で削除しておきます。
+
+```
+VERBOSE: [07/04/2022 06:37:09] [Kva] Uninstalling KVA without Azure Connection may result in leaked Arc Connected Clusters, Please clean up resources in portal.
+```
+
 ## ワークロード クラスターの削除
 
 管理クラスターは残したまま、ワークロード クラスターのみを削除します。
