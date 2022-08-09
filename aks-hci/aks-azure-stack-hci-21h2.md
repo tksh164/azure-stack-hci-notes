@@ -119,7 +119,7 @@
 
 1. [Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
 
-    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録していおきます。
+    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
 
     ```powershell
     Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
