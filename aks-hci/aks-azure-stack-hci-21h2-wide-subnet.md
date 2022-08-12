@@ -349,9 +349,6 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 }
 
 Invoke-Command -ComputerName $hciNodes -ScriptBlock {
-    Install-Module -Name 'Az.Accounts' -Repository 'PSGallery' -RequiredVersion '2.2.4' -Force -Verbose
-    Install-Module -Name 'Az.Resources' -Repository 'PSGallery' -RequiredVersion '3.2.0' -Force -Verbose
-    Install-Module -Name 'AzureAD' -Repository 'PSGallery' -RequiredVersion '2.0.2.128' -Force -Verbose
     Install-Module -Name 'AksHci' -Repository 'PSGallery' -AcceptLicense -Force -Verbose 
 }
 ```
@@ -448,7 +445,7 @@ Set-AksHciConfig @params
 
 ### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
 
-[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure に登録するための構成を作成します。
+[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure Arc-enabled Kubernetes として Azure に登録するための構成を作成します。
 
 任意のデバイス上の Web ブラウザーで https://microsoft.com/devicelogin にアクセスして表示されたコードを入力し、Azure AD 認証を行います。
 
