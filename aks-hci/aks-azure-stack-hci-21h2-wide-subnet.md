@@ -2,9 +2,7 @@
 
 ## Azure Stack HCI クラスターの作成
 
-[Azure Stack HCI 21H2 - Evaluation Guide](https://github.com/Azure/AzureStackHCI-EvalGuide/tree/21H2) に従って Azure Stack HCI クラスターを作成します。
-
-**main** ブランチではなく、**21H2** ブランチを使用します。
+[Azure Stack HCI 21H2 - Evaluation Guide](https://github.com/Azure/AzureStackHCI-EvalGuide/tree/21H2) に従って Azure Stack HCI クラスターを作成します。**main** ブランチではなく、**21H2** ブランチを使用します。
 
 ### Part 1 - Complete the prerequisites - deploy your Azure VM
 
@@ -25,10 +23,20 @@
     - Enable DHCP: **Disabled**
         - 今回は DHCP は使用しません。
 
-2. デプロイ完了後、Azure VM (Hyper-V ホスト) に RDP 接続して Azure VM (Hyper-V ホスト) にすべての更新プログラムを適用します。
+2. デプロイ完了後にやっておいた方が良いことがいくつかあります。
 
-    - AKS on HCI の構成し始めてから更新プログラムが適用されて再起動が発生してしまうことを避けられます。
-    - コストを節約するために既定では OS ディスクは Standard HDD LRS となっているため、更新プログラムの適用にはそれなりに時間を要します。
+    1. NSG の RDP のセキュリティ規則を更新します。
+
+        - デプロイされる NSG ではインターネットからの RDP 接続を無制限で許可しています。これは望ましくありませんので、Just-in-time VM access を有効化したり、特定の IP アドレスからの接続のみを許可するセキュリティ規則に変更するなどすることをお勧めします。
+
+    2. Azure VM (Hyper-V ホスト) に RDP 接続して Azure VM (Hyper-V ホスト) にすべての更新プログラムを適用します。
+
+        - AKS on HCI の構成し始めてから更新プログラムが適用されて再起動が発生してしまうことを避けられます。
+        - コストを節約するために既定では OS ディスクは Standard HDD LRS となっていて、更新プログラムの適用にはある程度の時間を要する場合があります。
+
+    3. 必要に応じて、Azure VM のパブリック IP アドレスに割り当てられている DNS 名を変更しておきます。
+
+        - 複数環境をデプロイしている場合に見分けが難しくなりやすいので、リソース グループ名を追加するなどしておくと便利です。
 
 3. Azure VM (Hyper-V ホスト) 上の HCI ノード VM の RAM サイズを可能な範囲で増やしておきます。
 
@@ -93,7 +101,7 @@
 
 4. クラウド監視を構成します。
 
-    クラウド監視用のストレージ アカウントを作成し、そのストレージ アカウントを使用して Azure Stack HCI クラスターの監視を構成します。
+    [Azure Cloud Shell](https://shell.azure.com/) などを使用してクラウド監視用のストレージ アカウントを作成し、そのストレージ アカウントを使用して Azure Stack HCI クラスターの監視を構成します。
 
     ストレージ アカウントの作成例:
 
@@ -118,7 +126,37 @@
 
 [Integrate Azure Stack HCI 21H2 with Azure](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/3_AzSHCIIntegration.md) を参考にして Azure Stack HCI クラスターを Azure に登録します。
 
-1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
+1. [Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
+
+    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
+
+    ```powershell
+    Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+    ```
+
+    すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
+
+    ```powershell
+    PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {operations}
+    Locations         : {}
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {locations}
+    Locations         : {}
+
+    ProviderNamespace : Microsoft.AzureStackHCI
+    RegistrationState : Registered
+    ResourceTypes     : {locations/operationstatuses}
+    Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
+    ...(省略)..
+    ```
+
+2. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
     Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
@@ -326,8 +364,6 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 [Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して全ての HCI ノードで要件が満たされているかを確認します。
 
-ポイント:
-
 - [vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。
 - ローカル Administrator としての実行で問題ありません。
 
@@ -349,8 +385,6 @@ WinRM is already set up for remote management on this computer.
 
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
-
-ポイント:
 
 - [vmconnect.exe](#vmconnectexe) を使用して、いずれか 1 台の Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で手順を実行します。
 - 既定で実行される PowerShell ウィンドウはローカル Administrator として実行されているため、Domain Admin として実行した PowerShell を使用します。
@@ -478,13 +512,23 @@ New-AksHciCluster @params
 
 管理クラスターやワークロード クラスターを含めた AKS on HCI 関連の要素 (保存された構成ファイルなども含む) を全て削除します。AKS on HCI のを再構築したい場合に実行します。
 
+- [vmconnect.exe](#vmconnectexe) を使用して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
+
 ```powershell
 Uninstall-AksHci
+```
+
+Uninstall-AksHci コマンドレットの実行結果として以下のようなメッセージが表示された場合は、Azure 側に Azure Arc-enabled Kubernetes のリソースが残ってしまっているので、Azure potal などから手動で削除しておきます。
+
+```
+VERBOSE: [07/04/2022 06:37:09] [Kva] Uninstalling KVA without Azure Connection may result in leaked Arc Connected Clusters, Please clean up resources in portal.
 ```
 
 ## ワークロード クラスターの削除
 
 管理クラスターは残したまま、ワークロード クラスターのみを削除します。
+
+- [vmconnect.exe](#vmconnectexe) を使用して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
 
 ```powershell
 Remove-AksHciCluster -Name 'akswc1'
