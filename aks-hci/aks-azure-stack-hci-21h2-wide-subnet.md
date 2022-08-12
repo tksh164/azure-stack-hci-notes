@@ -489,13 +489,13 @@ Install-AksHci -Verbose
 ```powershell
 $params = @{
     Name                  = 'akswc1'
-    ControlPlaneNodeCount = 1
     ControlplaneVmSize    = 'Standard_A4_v2'
+    ControlPlaneNodeCount = 1
     LoadBalancerVmSize    = 'Standard_A2_v2'
     NodePoolName          = 'nodepool1'
-    NodeCount             = 1
-    NodeVmSize            = 'Standard_A2_v2'
     OSType                = 'Linux'
+    NodeVmSize            = 'Standard_A2_v2'
+    NodeCount             = 1
     Verbose               = $true
 }
 New-AksHciCluster @params
