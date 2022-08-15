@@ -116,7 +116,7 @@ HCI ノード上では、`kubectl` は `C:\Program Files\AksHci\kubectl.exe` に
 
 ```powershell
 PS C:\> $env:PATH
-C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\vmadmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\AksHci;
+C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\AzureUser\AppData\Local\Microsoft\WindowsApps;C:\Program Files\AksHci;
 ```
 
 
