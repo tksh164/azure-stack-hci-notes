@@ -104,13 +104,21 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 
 ### kubectl によるワークロード クラスターへのアクセス
 
-kubectl を使用する際は、[Get-AksHciCredential](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcicredential) コマンドレットで使用するワークロード クラスターを切り替えてから操作します。
+`kubectl` を使用する際は、[Get-AksHciCredential](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcicredential) コマンドレットで使用するワークロード クラスターを切り替えてから操作します。
 
-Get-AksHciCredential コマンドレットを使用すると、指定したワークロード クラスターの kubeconfig ファイルを kubectl の既定の kubeconfig ファイルとして設定してくれます。
+Get-AksHciCredential コマンドレットを使用すると、指定したワークロード クラスターの `kubeconfig` ファイルを `kubectl` の既定の `kubeconfig` ファイルとして設定してくれます。
 
 ```powershell
 Get-AksHciCredential -Name 'akswc1'
 ```
+
+HCI ノード上では、`kubectl` は `C:\Program Files\AksHci\kubectl.exe` にインストールされており、パスが通されています。
+
+```powershell
+PS C:\> $env:PATH
+C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\vmadmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\AksHci;
+```
+
 
 ## Azure Stack HCI の登録に関する操作
 
@@ -126,9 +134,11 @@ Get-AksHciCredential -Name 'akswc1'
 
 ## kubectl で管理クラスターにアクセス
 
-`WorkingDir` 配下に `kubectl` のバイナリと一緒に管理クラスターに接続するための `kubeconfig` ファイルが `kubeconfig-mgmt` という名前で配置されています。
+`WorkingDir` 配下に管理クラスターに接続するための `kubeconfig` ファイルが `kubeconfig-mgmt` という名前で配置されています。
 
-アクセス例
+なお、`WorkingDir` 配下には `kubectl` の実行ファイルも配置されています。
+
+Azure VM (Hyper-V ホスト) 上からのアクセス例
 
 ```powershell
 PS C:\work> $env:KUBECONFIG = '\\azshcinode01\C$\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\kubeconfig-mgmt'
