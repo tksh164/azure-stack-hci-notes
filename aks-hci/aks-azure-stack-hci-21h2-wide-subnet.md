@@ -361,7 +361,7 @@ Invoke-Command -ComputerName $hciNodes -ScriptBlock {
 
 [Initialize-AksHciNode](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/initialize-akshcinode) コマンドレットを使用して全ての HCI ノードで要件が満たされているかを確認します。
 
-- [vmconnect.exe](#vmconnectexe) を使用して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。
+- [vmconnect.exe を使用](common-operations.md#vmconnectexe)して、各 Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で、Initialize-AksHciNode コマンドレットを実行します。
 - ローカル Administrator としての実行で問題ありません。
 
 ```powershell
@@ -383,7 +383,7 @@ WinRM is already set up for remote management on this computer.
 
 ## AKS on HCI (AKS ホスト / 管理クラスター) の作成
 
-- [vmconnect.exe](#vmconnectexe) を使用して、いずれか 1 台の Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で手順を実行します。
+- [vmconnect.exe を使用](common-operations.md#vmconnectexe)して、いずれか 1 台の Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で手順を実行します。
 - 既定で実行される PowerShell ウィンドウはローカル Administrator として実行されているため、Domain Admin として実行した PowerShell を使用します。
 
     ```powershell
@@ -509,7 +509,7 @@ New-AksHciCluster @params
 
 管理クラスターやワークロード クラスターを含めた AKS on HCI 関連の要素 (保存された構成ファイルなども含む) を全て削除します。AKS on HCI のを再構築したい場合に実行します。
 
-- [vmconnect.exe](#vmconnectexe) を使用して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
+- [vmconnect.exe を使用](common-operations.md#vmconnectexe)して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
 
 ```powershell
 Uninstall-AksHci
@@ -525,7 +525,7 @@ VERBOSE: [07/04/2022 06:37:09] [Kva] Uninstalling KVA without Azure Connection m
 
 管理クラスターは残したまま、ワークロード クラスターのみを削除します。
 
-- [vmconnect.exe](#vmconnectexe) を使用して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
+- [vmconnect.exe を使用](common-operations.md#vmconnectexe)して、Azure Stack HCI クラスター ノードにコンソール接続 (または、拡張セッション接続) した上で実行します。
 
 ```powershell
 Remove-AksHciCluster -Name 'akswc1'
