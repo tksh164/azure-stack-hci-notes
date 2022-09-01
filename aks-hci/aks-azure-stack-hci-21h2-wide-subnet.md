@@ -23,7 +23,7 @@
     - Enable DHCP: **Disabled**
         - AKS on HCI の[推奨 IP アドレス割り当てモデルは静的 IP ネットワーク](https://docs.microsoft.com/en-us/azure-stack/aks-hci/concepts-node-networking#virtual-network-with-static-ip-networking-recommended)のため、この手順では DHCP は使用しません。
 
-2. デプロイ完了後にやっておいた方が良いことがいくつかあります。
+2. デプロイ完了後に実施した方が良いことがいくつかあります。
 
     1. NSG の RDP のセキュリティ規則を更新します。
 
