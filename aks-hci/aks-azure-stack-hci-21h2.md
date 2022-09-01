@@ -23,7 +23,7 @@
             - Azure VM 停止時の AKS VM の保存容量、HCI ノード VM のメモリを増やした場合の VMRS ファイルのサイズなど、VHDX のサイズ以外にもディスク容量が必要になります。ディスク容量が不足すると VMRS ファイルを作成できず、VM を起動できません。
             - Azure VM のディスクは Simple 構成の記憶域スペースなので、後から容量を増やすのは難しいです。
     - Enable DHCP: **Disabled**
-        - AKS on HCI の[推奨 IP アドレス割り当てモデルは静的 IP ネットワーク](https://docs.microsoft.com/ja-jp/azure-stack/aks-hci/concepts-node-networking#virtual-network-with-static-ip-networking-recommended)のため、この手順では DHCP は使用しません。
+        - AKS on HCI の[推奨 IP アドレス割り当てモデルは静的 IP ネットワーク](https://docs.microsoft.com/en-us/azure-stack/aks-hci/concepts-node-networking#virtual-network-with-static-ip-networking-recommended)のため、この手順では DHCP は使用しません。
 
 2. デプロイ完了後にやっておいた方が良いことがいくつかあります。
 
