@@ -125,6 +125,47 @@ C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\Wind
 - TODO
 
 
+## AKS on Azure Stack HCI の登録に関する操作
+
+### OutOfPolicy
+
+管理クラスター作成後 60 日以内にワークロード クラスターを作成しない場合、AKS on HCI は OutOfPolicy 状態になります。
+OutOfPolicy 状態では、AKS on HCI の更新 (Update-AksHci コマンドレットの実行) や新しいワークロード クラスターの作成はできません。
+
+AKS on HCI が OutOfPolicy 状態になってしまった場合、AKS on HCI (管理クラスター) をアンインストールし、再度デプロイする必要があります。
+
+- [AKS on Azure Stack HCI goes out-of-policy if a workload cluster hasn't been created in 60 days.](https://docs.microsoft.com/en-us/azure-stack/aks-hci/known-issues-upgrade#aks-on-azure-stack-hci-goes-out-of-policy-if-a-workload-cluster-hasn-t-been-created-in-60-days-)
+
+例えば、新しいワークロード クラスターを作成しようとした場合、以下のような Billing が OutOfPolicy というエラーで失敗します。
+
+```powershell
+C:\Program Files\AksHci\kvactl.exe cluster create --clusterconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\yaml\akswc1.yaml"  --kubeconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\kubeconfig-mgmt" System.Collections.Hashtable.generic_non_zero 1 [Error: Failed get status for addon akshci-billing: Please check on your Azure Registration and try again: Billing is OutOfPolicy]
+At C:\Program Files\WindowsPowerShell\Modules\Kva\1.0.32\Common.psm1:2228 char:9
++         throw $errMessage
++         ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (C:\Program File...is OutOfPolicy]:String) [], RuntimeException
+    + FullyQualifiedErrorId : C:\Program Files\AksHci\kvactl.exe cluster create --clusterconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\yaml\akswc1.yaml"  --kubeconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\kubeconfig-mgmt" System.Collections.Hashtable.generic_non_zero 1 [Error: Failed get status for addon akshci-billing: Please check on your Azure Registration and try again: Billing is OutOfPolicy]
+```
+
+この場合、[Get-AksHciBillingStatus](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcibillingstatus) コマンドレットで課金の状態を確認すると、ConnectionStatus は OutOfPolicy になっています。
+
+```powershell
+PS C:\> Get-AksHciBillingStatus | fl *
+
+AzureResourceName : akshci-mgmt-cluster-220805-0320
+AzureResourceUri  : /subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.Kubernetes/connectedClusters/akshci-mgmt-cluster-220805-0320
+ConnectionStatus  : OutOfPolicy
+LastConnected     : 2022-08-10T06:30:05Z
+```
+
+[Sync-AksHciBilling](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/sync-akshcibilling) コマンドレットを使用して課金情報を同期すると、アップロードに成功したことを示すメッセージが表示されますが、Get-AksHciBillingStatus コマンドレットで確認できる ConnectionStatus は OutOfPolicy のままで、OutOfPolicy 状態が解消されることはありません。
+
+```powershell
+PS C:\> Sync-AksHciBilling
+Upload Successful!
+```
+
+
 ## 管理クラスターの名前を取得
 
 ```powershell
