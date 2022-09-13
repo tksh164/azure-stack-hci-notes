@@ -126,52 +126,58 @@
 
 [Integrate Azure Stack HCI 21H2 with Azure](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/3_AzSHCIIntegration.md) を参考にして Azure Stack HCI クラスターを Azure に登録します。
 
-1. [Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
+#### 使用する Azure サブスクリプションでの Azure Stack HCI の登録が始めての場合
 
-    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
+[Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
 
-    ```powershell
-    Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
-    ```
+自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
 
-    すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
+```powershell
+Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+```
 
-    ```powershell
-    PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {operations}
-    Locations         : {}
+```powershell
+PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {locations}
-    Locations         : {}
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {operations}
+Locations         : {}
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {locations/operationstatuses}
-    Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
-    ...(省略)..
-    ```
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {locations}
+Locations         : {}
 
-2. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {locations/operationstatuses}
+Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
+...(省略)..
+```
+
+#### Azure Stack HCI クラスターを Azure に登録
+
+1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
     Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
     Install-Module -Name 'PowerShellGet' -Scope AllUsers -Force -Verbose
     ```
 
-    インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を閉じて起動し直した後で Az.StackHCI モジュールをインストールします。
+2. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直します。
+
+3. Az.StackHCI モジュールをインストールします。
 
     ```powershell
     Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Force -Verbose
     ```
 
-3. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
+4. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直します。
 
-4. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
+5. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
 
     ```powershell
     $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
@@ -203,7 +209,7 @@
     Register-AzStackHCI @params
     ```
 
-5. Azure Stack HCI クラスターの登録状態を確認します。
+6. Azure Stack HCI クラスターの登録状態を確認します。
 
     ```powershell
     Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
