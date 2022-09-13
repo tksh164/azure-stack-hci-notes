@@ -436,7 +436,7 @@ Set-AksHciConfig @params
 
 ### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
 
-[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure Arc-enabled Kubernetes として Azure に登録するための構成を作成します。
+[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure Arc-enabled Kubernetes として Azure に登録するための構成を作成します。このコマンドの実行に要する時間は **1 分程度**です。
 
 任意のデバイス上の Web ブラウザーで https://microsoft.com/devicelogin にアクセスして表示されたコードを入力し、Azure AD 認証を行います。
 
