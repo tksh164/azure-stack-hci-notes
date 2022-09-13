@@ -406,7 +406,7 @@ $vnet = New-AksHciNetworkSetting @params
 
 ### AKS on HCI の構成を作成
 
-[Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。
+[Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。このコマンドの実行に要する時間は **1 分程度**です。
 
 管理クラスターのコントロール プレーン VM のスペックが低いと処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
 
