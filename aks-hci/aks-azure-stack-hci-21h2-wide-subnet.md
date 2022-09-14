@@ -11,7 +11,7 @@
 1. カスタム ARM テンプレートを使用してデプロイします。デプロイに要する時間は **35 分程度**です。
 
     - 稀にデプロイが失敗します。失敗した場合は、失敗したリソース グループを削除しつつ、再デプロイします。多くても 2 ～ 3 回目で大概成功します。
-        - 失敗する理由は様々なので、エラー内容を確認した上で、再デプロイする必要があります。vCore のクォータ不足で失敗している場合、何度再デプロイしても同じエラーで失敗します。
+        - 失敗する理由は様々なので、エラー内容を確認した上で、再デプロイする必要があります。例えば、vCore のクォータ不足で失敗している場合、何度再デプロイしても同じエラーで失敗します。
 
     - Virtual Machine Size: **Standard_E16s_v4**
         - VM サイズは Standard_E16s_v4 が事実上の最低サイズです。これ以上小さいサイズを選択した場合、環境は作れたとしてもその後の検証がほぼ何もできません。
@@ -126,52 +126,58 @@
 
 [Integrate Azure Stack HCI 21H2 with Azure](https://github.com/Azure/AzureStackHCI-EvalGuide/blob/21H2/deployment/steps/3_AzSHCIIntegration.md) を参考にして Azure Stack HCI クラスターを Azure に登録します。
 
-1. [Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
+#### 使用する Azure サブスクリプションでの Azure Stack HCI の登録が始めての場合
 
-    自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
+[Azure Cloud Shell](https://shell.azure.com/) などを使用して Azure サブスクリプションに Microsoft.AzureStackHCI リソース プロバイダーを登録します。
 
-    ```powershell
-    Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
-    ```
+自動で登録されるはずですが、初回失敗することが多いので、あらかじめ登録しておきます。
 
-    すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
+```powershell
+Register-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+```
 
-    ```powershell
-    PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
+すべてのリソース タイプの RegistrationState が Registered になっている場合は、再度登録する必要はありません。なお、登録してある状態で再度 Register-AzResourceProvider コマンドレットを実行したとしても影響はありません。
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {operations}
-    Locations         : {}
+```powershell
+PS C:\> Get-AzResourceProvider -ProviderNamespace 'Microsoft.AzureStackHCI'
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {locations}
-    Locations         : {}
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {operations}
+Locations         : {}
 
-    ProviderNamespace : Microsoft.AzureStackHCI
-    RegistrationState : Registered
-    ResourceTypes     : {locations/operationstatuses}
-    Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
-    ...(省略)..
-    ```
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {locations}
+Locations         : {}
 
-2. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
+ProviderNamespace : Microsoft.AzureStackHCI
+RegistrationState : Registered
+ResourceTypes     : {locations/operationstatuses}
+Locations         : {East US, East US 2 EUAP, West Europe, Southeast Asia…}
+...(省略)..
+```
+
+#### Azure Stack HCI クラスターを Azure に登録
+
+1. Hyper-V ホスト上 (Azure VM 上) に必要な PowerShell モジュールをインストールします。
 
     ```powershell
     Install-PackageProvider -Name 'NuGet' -Scope AllUsers -Force -Verbose
     Install-Module -Name 'PowerShellGet' -Scope AllUsers -Force -Verbose
     ```
 
-    インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を閉じて起動し直した後で Az.StackHCI モジュールをインストールします。
+2. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直します。
+
+3. Az.StackHCI モジュールをインストールします。
 
     ```powershell
     Install-Module -Name 'Az.StackHCI' -Scope AllUsers -Force -Verbose
     ```
 
-3. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直しておきます。
+4. インストールした PowerShell モジュールが確実に読み込まれるように PowerShell を開き直します。
 
-4. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
+5. Azure Stack HCI クラスターを Azure に登録します。2 ノードの場合、登録に要する時間は **10 分程度**です。
 
     ```powershell
     $clusterName             = 'azshciclus'                 # The Azure Stack HCI cluster name. The evaluation guide uses this name.
@@ -203,7 +209,7 @@
     Register-AzStackHCI @params
     ```
 
-5. Azure Stack HCI クラスターの登録状態を確認します。
+6. Azure Stack HCI クラスターの登録状態を確認します。
 
     ```powershell
     Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
@@ -415,7 +421,7 @@ $vnet = New-AksHciNetworkSetting @params
 
 ### AKS on HCI の構成を作成
 
-[Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。
+[Set-AksHciConfig](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciconfig) コマンドレットを使用して AKS on HCI の構成を作成します。このコマンドの実行に要する時間は **1 分程度**です。
 
 管理クラスターのコントロール プレーン VM のスペックが低いと処理がタイムアウトして失敗したりするので、十分大きい VM サイズ (以下では Standard_D4s_v3) を使用します。
 
@@ -445,7 +451,7 @@ Set-AksHciConfig @params
 
 ### 管理クラスターを Azure Arc-enabled Kubernetes として登録するための構成を作成
 
-[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure Arc-enabled Kubernetes として Azure に登録するための構成を作成します。
+[Set-AksHciRegistration](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/set-akshciregistration) コマンドレットを使用して管理クラスターを Azure Arc-enabled Kubernetes として Azure に登録するための構成を作成します。このコマンドの実行に要する時間は **1 分程度**です。
 
 任意のデバイス上の Web ブラウザーで https://microsoft.com/devicelogin にアクセスして表示されたコードを入力し、Azure AD 認証を行います。
 
