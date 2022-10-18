@@ -38,6 +38,18 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 }
 ```
 
+再開後は、Azure Stack HCI と AKS on HCI の接続状態を確認しておきます。
+
+```powershell
+Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+    Write-Host -Object 'AzureStack HCI connection status' -ForegroundColor Cyan
+    Get-AzureStackHCI
+
+    Write-Host -Object 'AKS on HCI connection status' -ForegroundColor Cyan
+    Get-AksHciBillingStatus -ErrorAction Continue | fl *
+}
+```
+
 ## Azure VM (Hyper-V ホスト) から Azure Stack HCI ノードへの各種アクセス方法
 
 #### PowerShell
