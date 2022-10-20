@@ -50,6 +50,42 @@ Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
 }
 ```
 
+Azure Stack HCI、AKS on HCI、どちらも `ConnectionStatus` が `Connected` になっていることを確認します。
+
+なお、再開直後はすぐに `Connected` にならないことがあるので、その場合は、しばらく (30 分程度) 待って、再度確認します。
+
+```powershell
+PS C:\> Invoke-Command -ComputerName 'azshcinode01.azshci.local' -ScriptBlock {
+>>     Write-Host -Object 'AzureStack HCI connection status' -ForegroundColor Cyan
+>>     Get-AzureStackHCI
+>>
+>>     Write-Host -Object 'AKS on HCI connection status' -ForegroundColor Cyan
+>>     Get-AksHciBillingStatus -ErrorAction Continue | fl *
+>> }
+
+AzureStack HCI connection status
+
+PSComputerName     : azshcinode01.azshci.local
+RunspaceId         : 7326bddf-adac-4f3f-b5a6-d0d898bf9999
+ClusterStatus      : Clustered
+RegistrationStatus : Registered
+RegistrationDate   : 10/10/2022 5:09:00 PM
+AzureResourceName  : azshciclus-aksazshci1-221010-1705
+AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci1-221010-1705
+ConnectionStatus   : Connected
+LastConnected      : 10/19/2022 4:01:17 AM
+IMDSAttestation    : Disabled
+DiagnosticLevel    : Basic
+
+AKS on HCI connection status
+
+AzureResourceName : akshci-mgmt-cluster-221010-1821
+AzureResourceUri  : /subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.Kubernetes/connectedClusters/akshci-mgmt-cluster-221010-1821
+ConnectionStatus  : Connected
+LastConnected     : 2022-10-13T06:00:03Z
+```
+
+
 ## Azure VM (Hyper-V ホスト) から Azure Stack HCI ノードへの各種アクセス方法
 
 #### PowerShell
