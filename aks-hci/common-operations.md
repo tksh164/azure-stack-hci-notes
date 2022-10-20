@@ -70,8 +70,8 @@ RunspaceId         : 7326bddf-adac-4f3f-b5a6-d0d898bf9999
 ClusterStatus      : Clustered
 RegistrationStatus : Registered
 RegistrationDate   : 10/10/2022 5:09:00 PM
-AzureResourceName  : azshciclus-aksazshci1-221010-1705
-AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci1-221010-1705
+AzureResourceName  : azshciclus-aksazshci-221010-1705
+AzureResourceUri   : /Subscriptions/55555555-6666-7777-8888-999999999999/resourceGroups/aksazshci/providers/Microsoft.AzureStackHCI/clusters/azshciclus-aksazshci-221010-1705
 ConnectionStatus   : Connected
 LastConnected      : 10/19/2022 4:01:17 AM
 IMDSAttestation    : Disabled
