@@ -152,7 +152,7 @@ LastConnected     : 2022-10-13T06:00:03Z
 
 ### kubectl によるワークロード クラスターへのアクセス
 
-`kubectl` を使用する際は、[Get-AksHciCredential](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcicredential) コマンドレットで使用するワークロード クラスターを切り替えてから操作します。
+`kubectl` を使用する際は、[Get-AksHciCredential](https://docs.microsoft.com/azure-stack/aks-hci/reference/ps/get-akshcicredential) コマンドレットで使用するワークロード クラスターを切り替えてから操作します。
 
 Get-AksHciCredential コマンドレットを使用すると、指定したワークロード クラスターの `kubeconfig` ファイルを `kubectl` の既定の `kubeconfig` ファイルとして設定してくれます。
 
@@ -182,7 +182,7 @@ OutOfPolicy 状態では、AKS on HCI の更新 (Update-AksHci コマンドレ�
 
 AKS on HCI が OutOfPolicy 状態になってしまった場合、AKS on HCI (管理クラスター) をアンインストールし、再度デプロイする必要があります。
 
-- [AKS on Azure Stack HCI goes out-of-policy if a workload cluster hasn't been created in 60 days.](https://docs.microsoft.com/en-us/azure-stack/aks-hci/known-issues-upgrade#aks-on-azure-stack-hci-goes-out-of-policy-if-a-workload-cluster-hasn-t-been-created-in-60-days-)
+- [AKS on Azure Stack HCI goes out-of-policy if a workload cluster hasn't been created in 60 days.](https://docs.microsoft.com/azure-stack/aks-hci/known-issues-upgrade#aks-on-azure-stack-hci-goes-out-of-policy-if-a-workload-cluster-hasn-t-been-created-in-60-days-)
 
 例えば、新しいワークロード クラスターを作成しようとした場合、以下のような Billing が OutOfPolicy というエラーで失敗します。
 
@@ -195,7 +195,7 @@ At C:\Program Files\WindowsPowerShell\Modules\Kva\1.0.32\Common.psm1:2228 char:9
     + FullyQualifiedErrorId : C:\Program Files\AksHci\kvactl.exe cluster create --clusterconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\yaml\akswc1.yaml"  --kubeconfig "C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\1.0.12.10727\kubeconfig-mgmt" System.Collections.Hashtable.generic_non_zero 1 [Error: Failed get status for addon akshci-billing: Please check on your Azure Registration and try again: Billing is OutOfPolicy]
 ```
 
-この場合、[Get-AksHciBillingStatus](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcibillingstatus) コマンドレットで課金の状態を確認すると、ConnectionStatus は OutOfPolicy になっています。
+この場合、[Get-AksHciBillingStatus](https://docs.microsoft.com/azure-stack/aks-hci/reference/ps/get-akshcibillingstatus) コマンドレットで課金の状態を確認すると、ConnectionStatus は OutOfPolicy になっています。
 
 ```powershell
 PS C:\> Get-AksHciBillingStatus | fl *
@@ -206,7 +206,7 @@ ConnectionStatus  : OutOfPolicy
 LastConnected     : 2022-08-10T06:30:05Z
 ```
 
-[Sync-AksHciBilling](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/sync-akshcibilling) コマンドレットを使用して課金情報を同期すると、アップロードに成功したことを示すメッセージが表示されますが、Get-AksHciBillingStatus コマンドレットで確認できる ConnectionStatus は OutOfPolicy のままで、OutOfPolicy 状態が解消されることはありません。
+[Sync-AksHciBilling](https://docs.microsoft.com/azure-stack/aks-hci/reference/ps/sync-akshcibilling) コマンドレットを使用して課金情報を同期すると、アップロードに成功したことを示すメッセージが表示されますが、Get-AksHciBillingStatus コマンドレットで確認できる ConnectionStatus は OutOfPolicy のままで、OutOfPolicy 状態が解消されることはありません。
 
 ```powershell
 PS C:\> Sync-AksHciBilling
@@ -239,28 +239,42 @@ kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   164m
 
 ## 管理クラスターへの ssh アクセス
 
-管理クラスターには `clouduser` というユーザーが存在します。`clouduser` として管理クラスターに `ssh` 接続するためのプライベート キーは `WorkingDir` 配下の `.ssh` フォルダー内に保存されています。
+管理クラスターには `clouduser` というユーザーが存在します。
 
-例: `\\azshcinode01\C$\ClusterStorage\aksvol\AKS-HCI\WorkingDir\.ssh\akshci_rsa`
+`clouduser` として管理クラスターに `ssh` 接続するためのプライベート キーは `WorkingDir` 配下の `.ssh` フォルダー内に保存されています。HCI クラスター ノード上であれば、以下のように [Get-AksHciConfig](https://learn.microsoft.com/azure/aks/hybrid/reference/ps/get-akshciconfig) コマンドレットを使用してパスを取得できます。
 
-なお、ssh コマンドで使用するためには、プライベート キー ファイルのアクセス許可は**自分のみ**に設定されている必要があります。
+```powershell
+PS C:\> $sshPrivateKeyPath = (Get-AksHciConfig).Moc.sshPrivateKey
+PS C:\> $sshPrivateKeyPath
+C:\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\.ssh\akshci_rsa
+```
 
-- 接続例
+プライベート キーを使用した接続例は以下のようになります。
 
-    ```powershell
-    PS C:\> ssh.exe clouduser@10.10.13.11 -i 'C:\work\akshci_rsa'
-    The authenticity of host '10.10.13.11 (10.10.13.11)' can't be established.
-    ECDSA key fingerprint is SHA256:bo2lhIfaNxYfLlIOnUEg5RBoe5dJZT/UllBhyQI12RI.
-    Are you sure you want to continue connecting (yes/no)? y
-    Please type 'yes' or 'no': yes
-    Warning: Permanently added '10.10.13.11' (ECDSA) to the list of known hosts.
-    clouduser@moc-l7i1xvl2ew2 [ ~ ]$
-    ```
+```powershell
+PS C:\> $sshPrivateKeyPath = (Get-AksHciConfig).Moc.sshPrivateKey
+PS C:\> ssh.exe clouduser@10.10.13.11 -i $sshPrivateKeyPath
+The authenticity of host '10.10.13.11 (10.10.13.11)' can't be established.
+ECDSA key fingerprint is SHA256:bo2lhIfaNxYfLlIOnUEg5RBoe5dJZT/UllBhyQI12RI.
+Are you sure you want to continue connecting (yes/no)? y
+Please type 'yes' or 'no': yes
+Warning: Permanently added '10.10.13.11' (ECDSA) to the list of known hosts.
+clouduser@moc-l7i1xvl2ew2 [ ~ ]$
+```
+
+なお、Azure VM (Hyper-V ホスト) 上から見た場合のプライベート キーのパスは以下のようになります。
+
+パス例: `\\azshcinode01\C$\ClusterStorage\AksHciVol\AKS-HCI\WorkingDir\.ssh\akshci_rsa`
+
+ssh コマンドで使用するためには、プライベート キー ファイルのアクセス許可は **ssh コマンドを実行しているユーザーのみ**に設定されている必要があります。Azure VM (Hyper-V ホスト) 上から ssh コマンドを実行する場合には、実行ユーザーを考慮するか、プライベート キー ファイルを別の場所に配置して、適切なアクセス許可を設定した上で利用する必要があります。
+
+参考情報:
+- [Connect with SSH to Windows or Linux worker nodes for maintenance and troubleshooting in AKS hybrid](https://learn.microsoft.com/azure/aks/hybrid/ssh-connection)
 
 
 ## ログの確認
 
-[Get-AksHciLogs](https://docs.microsoft.com/en-us/azure-stack/aks-hci/reference/ps/get-akshcilogs) コマンドレットを使用すると AKS on HCI 関連の各種ログを含んだ zip ファイルを生成できます。
+[Get-AksHciLogs](https://docs.microsoft.com/azure-stack/aks-hci/reference/ps/get-akshcilogs) コマンドレットを使用すると AKS on HCI 関連の各種ログを含んだ zip ファイルを生成できます。
 
 ログの zip ファイルは WorkingDir 配下に保存されます。
 
