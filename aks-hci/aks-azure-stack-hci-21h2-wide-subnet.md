@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> Azure Stack HCI に関する最新のラボ環境は [HCI Lab](https://github.com/tksh164/hci-lab) にあります。
+> 
+> ここに記載されている情報は古くなっています。
+
 # AKS on Azure Stack HCI 21H2 (コンピューティング トラフィック用サブネット拡張版)
 
 ## Azure Stack HCI クラスターの作成
