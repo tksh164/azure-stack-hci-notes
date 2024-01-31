@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> Azure Stack HCI に関する最新のラボ環境は [HCI Lab](https://github.com/tksh164/hci-lab) にあります。
+> 
+> ここに記載されている情報は古くなっています。
+
 # AKS on Azure Stack HCI 21H2
 
 ![Configuration Overview](./media/aks-azure-stack-hci-21h2-overview.svg)
